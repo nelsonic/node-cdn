@@ -44,8 +44,9 @@ will provide a *massive* boost to any NodeJS (or *any* other Web App!) and is a 
 
 ---
 
+### Implementation
 
-###
+- We are using the [Knox](https://github.com/LearnBoost/knox) module by LearnBoost
 
 
 
