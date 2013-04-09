@@ -3,7 +3,7 @@
 
 ### What This Module Does
 
-- Creates a REST API Wrapper Method which allows any app to upload a static file (image/css/js/json) to Amazon Webservices (AWS) Simple Storage Service (S3) and **returns** a **URL** for uploaded file.
+- Creates a REST API Wrapper Method which allows any app to upload a static file (image/css/js/json) to Amazon WebServices (AWS) Simple Storage Service (S3) and **returns** a **URL** for the uploaded file.
 
 ---
 
@@ -46,7 +46,8 @@ will provide a *massive* boost to any NodeJS (or *any* other Web App!) and is a 
 
 ### Implementation
 
-- We are using the [Knox](https://github.com/LearnBoost/knox) module by LearnBoost 
+- We are using the [Knox](https://github.com/LearnBoost/knox) module
+ by LearnBoost: https://github.com/LearnBoost/knox
 
 
 
