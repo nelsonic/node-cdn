@@ -52,9 +52,14 @@ will provide a *massive* boost to any NodeJS (or *any* other Web App!) and is a 
 
 We are using:
 
-#### Lingua Franca : [CoffeeScript](http://coffeescript.org/)
+#### [Lingua Franca](http://en.wikipedia.org/wiki/Lingua_franca) : [CoffeeScript](http://coffeescript.org/)
 
-If you are toally *new* to CoffeeScript, *welcome* to the **Future**!! Here are a couple of simple tutorials to get you started:
+If you are toally *new* to CoffeeScript, *welcome* to the **Future**!! 
+
+There has been much **debate** in the JavaScript / NodeJS Community as to wether you should learn CoffeeScript or just continue writing (mediocre) JavaScript... 
+
+
+Here are a couple of simple tutorials to get you started:
 
 - GitHub: https://github.com/jashkenas/coffee-script
 - [NodeTuts](http://nodetuts.com/) Video intro by Pedro Teixeira [pgte](https://github.com/pgte) http://vimeo.com/18429839 ... Pedro works for [NodeJitsu](https://www.nodejitsu.com/) ... Follow him! [@pgte](https://twitter.com/pgte)
@@ -64,13 +69,21 @@ If you are toally *new* to CoffeeScript, *welcome* to the **Future**!! Here are 
 
 #### Testing with [Jasmine](http://pivotal.github.io/jasmine) 
 
-For our *Unit Testing* http://pivotal.github.io/jasmine/ If you are *new* to using Jasmine I recommend you take the time to *learn it well* by going through the [CoffeeScript **Koans**](https://github.com/sleepyfox/coffeescript-koans) TTD/BDD Tutorials (time: 60 mins) and reading the CoffeeScript Cookbook section on [Testing with Jasmine](http://coffeescriptcookbook.com/chapters/testing/testing_with_jasmine) 
+For our *Unit Testing* http://pivotal.github.io/jasmine/ 
+If you are *new* to using Jasmine I recommend you take the time to *learn it well* by working through the following tutorials:
+
+- Basic intro to Jasmine: http://net.tutsplus.com/tutorials/javascript-ajax/testing-your-javascript-with-jasmine/
+- [CoffeeScript **Koans**](https://github.com/sleepyfox/coffeescript-koans) TTD/BDD Tutorials (time: 60 mins) 
+- CoffeeScript Cookbook section on [Testing with Jasmine](http://coffeescriptcookbook.com/chapters/testing/testing_with_jasmine) (time: 30 mins)
 
 #### Primary Dependency: [Knox](https://github.com/LearnBoost/knox) 
 
 The Knox module by [LearnBoost](https://www.learnboost.com/): https://github.com/LearnBoost/knox it is the most popular Amazon WebServices (AWS) Simple Storage System (S3) Module for NodeJS - read the examples on the module's GitHub page and then subtract all the superfluous "punctuation".
 
 
+## Stuck? 
+
+If you get stuck or have any questions I'm here to help! [@nelsonic](https://twitter.com/nelsonic)
 
 ---
 #### Notes to Future-Self:
