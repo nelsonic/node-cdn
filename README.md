@@ -56,7 +56,12 @@ We are using:
 
 If you are toally *new* to CoffeeScript, *welcome* to the **Future**!! 
 
-There has been much **debate** in the JavaScript / NodeJS Community as to wether you should learn CoffeeScript or just continue writing (mediocre) JavaScript... 
+There has been much **debate** in the JavaScript / NodeJS Community as to wether you should learn CoffeeScript or just continue writing (*mediocre*) JavaScript ... It boils down to Five Things:
+
+- Code Clarity - CoffeeScript forces indentation and is "whitespace significant" (like Python)
+- Consistent Quality - CoffeeScript is designed to *Pass* [JS Lint](http://www.javascriptlint.com) meaning it follows all the JavaScript Best Practices described in [Douglas Crockford](http://javascript.crockford.com/)'s ["JavaScript: The Good Parts"](http://www.amazon.com/JavaScript-Good-Parts-Douglas-Crockford/dp/0596517742). 
+
+Essentially people *new* to JS development *hack* at the problem or copy-paste the "solution" by googling, by contrast, people that do the [Homework](https://twitter.com/nelsonic/status/321950687619584001/photo/1) and have experience of debugging *terrible* (rushed/unstructured/untested/undocumented) JS code
 
 
 Here are a couple of simple tutorials to get you started:
@@ -75,6 +80,11 @@ If you are *new* to using Jasmine I recommend you take the time to *learn it wel
 - Basic intro to Jasmine: http://net.tutsplus.com/tutorials/javascript-ajax/testing-your-javascript-with-jasmine/
 - [CoffeeScript **Koans**](https://github.com/sleepyfox/coffeescript-koans) TTD/BDD Tutorials (time: 60 mins) 
 - CoffeeScript Cookbook section on [Testing with Jasmine](http://coffeescriptcookbook.com/chapters/testing/testing_with_jasmine) (time: 30 mins)
+
+#### Templating
+
+I've used Jade, EJS and [CoffeeKup](https://github.com/mauricemach/coffeekup)
+but decided to try ECT because it claims to be **Faster** than the more established alternatives. see: [Templating Engine Benchmark](https://github.com/baryshev/template-benchmark) https://github.com/baryshev/template-benchmark
 
 #### Primary Dependency: [Knox](https://github.com/LearnBoost/knox) 
 
