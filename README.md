@@ -93,23 +93,27 @@ The Knox module by [LearnBoost](https://www.learnboost.com/): https://github.com
 
 ## Stuck? 
 
-If you get stuck or have any questions I'm here to help! [@nelsonic](https://twitter.com/nelsonic)
+If you get stuck or have any questions tweet me! [@nelsonic](https://twitter.com/nelsonic)
 
 ---
 #### Notes to Future-Self:
 If you need to *update* the version of **Jasmine** go to: https://github.com/pivotal/jasmine/downloads
 
-I'm using [**CDNJS**](http://cdnjs.com/) http://cdnjs.com/ to source all BackboneJS dependencies in **SpecRunner.html** 
+I'm using [**CDNJS**](http://cdnjs.com/) http://cdnjs.com/ to source all Backbone JS dependencies in **SpecRunner.html** (but you do not *need* to know Backbone to use this module!)
 
 - http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js
 - http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js
 - http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js
 - http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.2/coffee-script.min.js
 
-If you need to update any of these for any reason, go for it! :-)
+If you need to update any of these for any reason, go for it!
 
 In production you may want to host these Static JS files on your own CDN to have *full control* over what code you are running (#Security), but I trust [CloudFlare](https://www.cloudflare.com/) (for now...) so just using their bandwidth. ;-)
 
->> I need to investigate using 
+>> I need to investigate using SourceMaps to help debug CoffeeScript!
+- http://stackoverflow.com/questions/11068023/debugging-coffeescript-line-by-line
+- http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/
+- http://www.adaltas.com/blog/2012/02/15/coffeescript-print-debug-line/
+
 
 
