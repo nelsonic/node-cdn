@@ -14,6 +14,10 @@ If you are *not* using a Content Delivery Network
 for your web projects. Take some time to watch this Video on 
 How CDNs Work: http://youtu.be/WTlweLma3Vc
 
+Using a CDN is the single greatest performance boost you can give your Web App. 
+
+
+
 The cost of using a CDN has decreased greatly in the past few years due to increased competition.
 
 There are several great CDN Providers out there; the main ones are:
@@ -53,6 +57,9 @@ We are using:
 If you are toally *new* to CoffeeScript, *welcome* to the **Future**!! Here are a couple of simple tutorials to get you started:
 
 - GitHub: https://github.com/jashkenas/coffee-script
+- [NodeTuts](http://nodetuts.com/) Video intro by Pedro Teixeira [pgte](https://github.com/pgte) http://vimeo.com/18429839 ... Pedro works for [NodeJitsu](https://www.nodejitsu.com/) ... Follow him! [@pgte](https://twitter.com/pgte)
+- Intro tutorial http://net.tutsplus.com/tutorials/javascript-ajax/rocking-out-with-coffeescript/
+- CoffeeScript with BackBone and Jasmine http://net.tutsplus.com/tutorials/javascript-ajax/building-and-testing-a-backbone-app/
 
 
 #### Testing with [Jasmine](http://pivotal.github.io/jasmine) 
