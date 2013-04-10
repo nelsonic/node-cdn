@@ -46,8 +46,40 @@ will provide a *massive* boost to any NodeJS (or *any* other Web App!) and is a 
 
 ### Implementation
 
-- We are using the [Knox](https://github.com/LearnBoost/knox) module
- by LearnBoost: https://github.com/LearnBoost/knox
+We are using:
 
+#### Lingua Franca : [CoffeeScript](http://coffeescript.org/)
+
+If you are toally *new* to CoffeeScript, *welcome* to the **Future**!! Here are a couple of simple tutorials to get you started:
+
+- GitHub: https://github.com/jashkenas/coffee-script
+
+
+#### Testing with [Jasmine](http://pivotal.github.io/jasmine) 
+
+For our *Unit Testing* http://pivotal.github.io/jasmine/ If you are *new* to using Jasmine I recommend you take the time to *learn it well* by going through the [CoffeeScript **Koans**](https://github.com/sleepyfox/coffeescript-koans) TTD/BDD Tutorials (time: 60 mins) and reading the CoffeeScript Cookbook section on [Testing with Jasmine](http://coffeescriptcookbook.com/chapters/testing/testing_with_jasmine) 
+
+#### Primary Dependency: [Knox](https://github.com/LearnBoost/knox) 
+
+The Knox module by [LearnBoost](https://www.learnboost.com/): https://github.com/LearnBoost/knox it is the most popular Amazon WebServices (AWS) Simple Storage System (S3) Module for NodeJS - read the examples on the module's GitHub page and then subtract all the superfluous "punctuation".
+
+
+
+---
+#### Notes to Future-Self:
+If you need to *update* the version of **Jasmine** go to: https://github.com/pivotal/jasmine/downloads
+
+I'm using [**CDNJS**](http://cdnjs.com/) http://cdnjs.com/ to source all BackboneJS dependencies in **SpecRunner.html** 
+
+- http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js
+- http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js
+- http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js
+- http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.2/coffee-script.min.js
+
+If you need to update any of these for any reason, go for it! :-)
+
+In production you may want to host these Static JS files on your own CDN to have *full control* over what code you are running (#Security), but I trust [CloudFlare](https://www.cloudflare.com/) (for now...) so just using their bandwidth. ;-)
+
+>> I need to investigate using 
 
 
