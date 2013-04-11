@@ -1,0 +1,17 @@
+<!-- views/coffeescript.html -->
+
+<script type="text/coffeescript">
+  $ ->
+  	console.log 'coffee working ;-)'
+		jasmineEnv = jasmine.getEnv()
+		jasmineEnv.updateInterval = 1000
+		htmlReporter = new jasmine.HtmlReporter()
+		jasmineEnv.addReporter htmlReporter
+		jasmineEnv.specFilter = (spec) ->
+      htmlReporter.specFilter spec
+
+    jasmineEnv.execute()
+
+</script>
+
+

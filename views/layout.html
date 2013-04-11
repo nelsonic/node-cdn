@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<% include 'meta.html' %>
+
+		<title><%- @title %></title>
+
+		<% include 'styles.html' %>
+
+	</head>
+
+	<body>
+
+		<header> <!-- see: http://html5doctor.com/the-header-element/ -->
+			<% include 'header.html' %> 
+		</header>
+
+		<% content %>
+
+		<% include 'scripts.html' %>
+		<% include 'coffeescript.html' %>
+
+		<footer> <!-- see: http://html5doctor.com/the-footer-element/ -->
+			<% include 'footer.html' %> 
+		</footer>	
+
+	</body>
+
+</html>
