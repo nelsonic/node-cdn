@@ -145,9 +145,7 @@ In production you may want to host these Static JS files on your own CDN to have
 - http://www.adaltas.com/blog/2012/02/15/coffeescript-print-debug-line/
 <<
 
-Look into speeding up CSS:
-
-* More Efficient CSS: http://vimeo.com/54990931
+* Must look into **speeding up CSS**: http://vimeo.com/54990931
 
 ## License 
 
