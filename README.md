@@ -21,7 +21,7 @@ Using a CDN is the *single* greatest **performance boost** you can give your Web
 
 See: 
 
-* [**Yahoo** Web Developer **Rules**](http://developer.yahoo.com/performance/rules.html) : http://developer.yahoo.com/performance/rules.html
+* [**Yahoo** Web Developer **Rules**](http://developer.yahoo.com/performance/rules.html) : http://developer.yahoo.com/performance/rules.html (I recommend using [YSlow](http://developer.yahoo.com/yslow/) to monitor your progress :-)
 * [**Google** Web Page Speed **Best Practices**](https://developers.google.com/speed/docs/best-practices/rules_intro) : https://developers.google.com/speed/docs/best-practices/rules_intro
 
 If you are not *using* a CDN for your NodeJS projects, 
@@ -73,15 +73,17 @@ There has been much **debate** in the JavaScript / NodeJS Community as to wether
 
 Essentially people *new* to JS development *hack* at the problem or copy-paste the "solution" by googling, by contrast, people that do the [Homework](https://twitter.com/nelsonic/status/321950687619584001/photo/1) and have experience of **debugging** *terrible* (rushed/unstructured/untested/undocumented) JS code learn to appreciate the value of enforced standards.
 
-CoffeeScript forces you to respect WhiteSpace. While initially annoying for those of you who don't have a background in Python, you will soon see the benefit when working in a *Team* of having everbody's code look *consistent*.
+CoffeeScript forces you to respect whitespace. While initially annoying (for those of you who don't have a background in Python), 
+you will soon see the *benefit* when working in a *Team* of having everbody's code *look consistent*.
 
 Here are a couple of simple tutorials to get you started:
 
-- GitHub: https://github.com/jashkenas/coffee-script
-- [NodeTuts](http://nodetuts.com/) Video intro by Pedro Teixeira [pgte](https://github.com/pgte) http://vimeo.com/18429839 ... Pedro works for [NodeJitsu](https://www.nodejitsu.com/) ... Follow him! [@pgte](https://twitter.com/pgte)
-- Intro tutorial http://net.tutsplus.com/tutorials/javascript-ajax/rocking-out-with-coffeescript/
-- CoffeeScript with BackBone and Jasmine http://net.tutsplus.com/tutorials/javascript-ajax/building-and-testing-a-backbone-app/
-- http://glennstovall.com/blog/2012/05/07/rapid-development-with-node-dot-js-and-coffeescript/
+* GitHub: https://github.com/jashkenas/coffee-script
+* [NodeTuts](http://nodetuts.com/) Video intro by Pedro Teixeira [pgte](https://github.com/pgte) http://vimeo.com/18429839 ... Pedro works for [NodeJitsu](https://www.nodejitsu.com/) ... Follow him! [@pgte](https://twitter.com/pgte)
+* Intro tutorial http://net.tutsplus.com/tutorials/javascript-ajax/rocking-out-with-coffeescript/
+* 
+* CoffeeScript with BackBone and Jasmine http://net.tutsplus.com/tutorials/javascript-ajax/building-and-testing-a-backbone-app/
+* http://glennstovall.com/blog/2012/05/07/rapid-development-with-node-dot-js-and-coffeescript/
 
 >> Must move this block to CoffeeScript Blog Post / Rant ... ;-)
 
