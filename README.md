@@ -10,26 +10,25 @@
 ### Intro
 
 If you have no *idea* what a Content Delivery Network 
-[CDN](http://en.wikipedia.org/wiki/Content_delivery_network) is, *in a nutshell* it means the **people** visiting have to **wait less** time (for pages to load).
+[CDN](http://en.wikipedia.org/wiki/Content_delivery_network) is, *in a nutshell* it means the **people** visiting have to **wait less** time (for pages to load). This is because the "content" (images, text, videos and "scripts" - such as CSS and JavaScript are stored/served *closer* to them on world-wide-web)
 
 ![CDN Diagram shows one server vs several servers distributed near the client](http://upload.wikimedia.org/wikipedia/commons/f/f9/NCDN_-_CDN.png "CDN means content is served from the web server that is closest to the visitor")
 
-
-If you are not *using* a CDN for your NodeJS projects, 
-this module will help you get started. ;-)
-
 Take some time to watch this **Video** on 
-How CDNs Work: http://youtu.be/WTlweLma3Vc
+How CDNs Work: http://youtu.be/dZ5aXGFnxI4 [Watch in **720p** *Full Screen*]
 
-Using a CDN is the *single* greatest *performance boost* you can give your Web Application. 
+Using a CDN is the *single* greatest **performance boost** you can give your Web Application. 
 
 See: 
 
 * [**Yahoo** Web Developer **Rules**](http://developer.yahoo.com/performance/rules.html) : http://developer.yahoo.com/performance/rules.html
 * [**Google** Web Page Speed **Best Practices**](https://developers.google.com/speed/docs/best-practices/rules_intro) : https://developers.google.com/speed/docs/best-practices/rules_intro
 
+If you are not *using* a CDN for your NodeJS projects, 
+this module will help you get started. ;-)
 
-The cost of using a CDN has decreased greatly in the past few years due to increased competition.
+
+The cost of using a CDN has decreased greatly in the past few years due to increased competition. What *used* to cost *thousands* of dollars (or pounds/euros/yen...) now costs just pennies. The hardest part is getting everything *set up* ...
 
 There are several great CDN Providers out there; the main ones are:
 
@@ -52,6 +51,7 @@ visit: http://www.cedexis.com/country-reports/
 you **get more** when you **pay more**. 
 At the time of writing Akamai has an average latency of 102ms '
 whereas AWS's **CloudFront** is 106ms; a negligeable difference.
+
 For our purposes using **Amazon's S3** + **CloudFront** 
 will provide a *massive* boost to any NodeJS (or *any* other Web App!) and is a great way to **get started**!
 
