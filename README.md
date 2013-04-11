@@ -11,11 +11,20 @@
 
 If you are *not* using a Content Delivery Network 
 [CDN](http://en.wikipedia.org/wiki/Content_delivery_network) 
-for your web projects. Take some time to watch this Video on 
+for your web projects, you have come to the right place. ;-)
+
+![CDN Diagram shows one server vs several servers distributed near the client](http://upload.wikimedia.org/wikipedia/commons/f/f9/NCDN_-_CDN.png "CDN means content is served from the web server that is closest to the visitor")
+
+
+Take some time to watch this Video on 
 How CDNs Work: http://youtu.be/WTlweLma3Vc
 
-Using a CDN is the single greatest performance boost you can give your Web App. 
+Using a CDN is the *single* greatest *performance boost* you can give your Web Application. 
 
+See: 
+
+* http://developer.yahoo.com/performance/rules.html
+* https://developers.google.com/speed/docs/best-practices/rules_intro
 
 
 The cost of using a CDN has decreased greatly in the past few years due to increased competition.
@@ -131,6 +140,10 @@ In production you may want to host these Static JS files on your own CDN to have
 - http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/
 - http://www.adaltas.com/blog/2012/02/15/coffeescript-print-debug-line/
 <<
+
+Look into speeding up CSS:
+
+* More Efficient CSS: http://vimeo.com/54990931
 
 ## License 
 
