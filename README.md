@@ -9,22 +9,24 @@
 
 ### Intro
 
-If you are *not* using a Content Delivery Network 
-[CDN](http://en.wikipedia.org/wiki/Content_delivery_network) 
-for your web projects, you have come to the right place. ;-)
+If you have no *idea* what a Content Delivery Network 
+[CDN](http://en.wikipedia.org/wiki/Content_delivery_network) is, *in a nutshell* it means the **people** visiting have to **wait less** time (for pages to load).
 
 ![CDN Diagram shows one server vs several servers distributed near the client](http://upload.wikimedia.org/wikipedia/commons/f/f9/NCDN_-_CDN.png "CDN means content is served from the web server that is closest to the visitor")
 
 
-Take some time to watch this Video on 
+If you are not *using* a CDN for your NodeJS projects, 
+this module will help you get started. ;-)
+
+Take some time to watch this **Video** on 
 How CDNs Work: http://youtu.be/WTlweLma3Vc
 
 Using a CDN is the *single* greatest *performance boost* you can give your Web Application. 
 
 See: 
 
-* http://developer.yahoo.com/performance/rules.html
-* https://developers.google.com/speed/docs/best-practices/rules_intro
+* [**Yahoo** Web Developer **Rules**](http://developer.yahoo.com/performance/rules.html) : http://developer.yahoo.com/performance/rules.html
+* [**Google** Web Page Speed **Best Practices**](https://developers.google.com/speed/docs/best-practices/rules_intro) : https://developers.google.com/speed/docs/best-practices/rules_intro
 
 
 The cost of using a CDN has decreased greatly in the past few years due to increased competition.
