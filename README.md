@@ -55,6 +55,9 @@ whereas AWS's **CloudFront** is 106ms; a negligeable difference.
 For our purposes using **Amazon's S3** + **CloudFront** 
 will provide a *massive* boost to any NodeJS (or *any* other Web App!) and is a great way to **get started**!
 
+If you are *completely* new to Amazon Web Services (AWS) I recommend watching [@Sayanee](https://github.com/sayanee)'s [build-podcast.com](http://build-podcast.com/)
+http://vimeo.com/59749907
+
 
 ---
 

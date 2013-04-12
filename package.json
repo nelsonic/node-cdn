@@ -2,13 +2,15 @@
   "name": "node-cdn",
   "version": "0.0.1",
   "author": "https://twitter.com/nelsonic",
-  "description":"A Simple S3 Uploader example written in CoffeeScript",
+  "description":"A Simple AWS S3 Uploader (experiment) written in CoffeeScript using Knox",
   
   "private": false,
   "dependencies": {
     "jasmine-node": ">= 1.5.0",
     "knox":">= 0.7.0",
-    "js-yaml":"*"
+    "js-yaml":"*",
+    "express":"*",
+    "ect":"*"
 	}, 
 	"license": "MIT",
   "engines": {
