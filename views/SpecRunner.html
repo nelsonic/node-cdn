@@ -1,0 +1,28 @@
+<% extend 'layout.html' %>
+
+<hr />
+<!-- views/SpecRunner.html -->
+<h4> Test <em>First</em> Development Using Jasmine</h4>
+
+
+<script type="text/coffeescript" src="lib.coffee"></script>
+
+<!-- include spec files here... -->
+<script type="text/coffeescript" src="spec.coffee"></script>
+
+
+
+<script type="text/coffeescript">
+  $ ->
+    jasmineEnv = jasmine.getEnv()
+    jasmineEnv.updateInterval = 1000
+    htmlReporter = new jasmine.HtmlReporter()
+    jasmineEnv.addReporter htmlReporter
+    jasmineEnv.specFilter = (spec) ->
+      htmlReporter.specFilter spec
+
+    jasmineEnv.execute()
+
+</script>
+
+<% include 'scripts.html' %>

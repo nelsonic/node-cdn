@@ -148,7 +148,15 @@ In production you may want to host these Static JS files on your own CDN to have
 - http://www.adaltas.com/blog/2012/02/15/coffeescript-print-debug-line/
 <<
 
-* Must look into **speeding up CSS**: http://vimeo.com/54990931
+Must make time for:
+*  **speeding up CSS**: http://vimeo.com/54990931
+* Angular:
+    - http://docs.angularjs.org/tutorial/
+* Grunt
+    - http://gruntjs.com/
+    - http://gruntjs.com/sample-gruntfile
+* Travis: http://blog.bob.sh/2012/01/travis-ci.html
+
 
 ## License 
 

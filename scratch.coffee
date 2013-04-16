@@ -30,3 +30,43 @@ class NodeCDN
 		# req.end(str) 
 
 exports.NodeCDN = NodeCDN
+
+
+
+---------------------- *WORKING* Simple HTML Form --------------------------
+
+express = require('express')
+format = require('util').format;
+
+app = module.exports = express()
+app.use(express.bodyParser())
+
+app.get '/', (req, res) ->
+  res.send '''<form method="post" action="/upload" enctype="multipart/form-data">
+  <p>Title: <input type="text" name="title" /></p>
+  <p>Image: <input type="file" name="image" /></p>
+  <p><input type="submit" value="Upload" /></p>
+  </form>'''
+
+app.post '/upload', (req, res, next) ->
+  # the uploaded file can be found as `req.files.image` and the
+  # title field as `req.body.title`
+  res.send format('\nuploaded %s (%d Kb) to %s as %s'
+    , req.files.image.name
+    , req.files.image.size / 1024 | 0 
+    , req.files.image.path
+    , req.body.title)
+
+if (!module.parent)
+  app.listen(3000)
+  console.log('Express started on port 3000')
+
+
+--- not working ---
+
+uploadtos3 = (filename) ->
+  S3.client.putFile filename, filename, {'Content-Type': 'text/json','x-amz-acl': 'public-read'}, (err, res) ->
+    if err 
+      console.log err
+    return res.client['_httpMessage']['url']
+  
