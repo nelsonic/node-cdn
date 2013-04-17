@@ -186,7 +186,7 @@
     }
     match = /{ 'json : /.test(json);
     match2 = /json : {/.test(json);
-    console.log("Matched: " + match);
+    console.log("Match 1: " + match + " -- Match 2: " + match2);
     if (match || match2) {
       try {
         json = cleanbodyjson(json);
