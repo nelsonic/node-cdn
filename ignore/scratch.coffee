@@ -115,4 +115,84 @@ S3.client.putFile('./'+filename, filename, {'x-amz-acl': 'public-read'}, (err, r
   # console.log res
 )
 
+### - - - Works but too slow - - - ###
+S3readapps = () ->
+  appstring = ''
+  client.get('/apps/apps.json').on('response', (res) -> 
+    console.log(res.statusCode)
+    # console.log(res.headers)
+    res.setEncoding('utf8')
+    res.on('data', (chunk) ->
+      # console.log(chunk)
+      appstring += chunk
+    )
+  ).end()
+
+
+### - - - Casualties (Were Working!) - - - ###
+
+
+S3uploadjson = (jsonstr) ->
+  id = JSON.parse(jsonstr)['Id']
+  filename = appdir+id+".json"
+  req = client.put(filename, 
+      'Content-Length': jsonstr.length
+      'Content-Type': 'application/json'
+      'x-amz-acl': 'public-read'
+  )
+  req.on('response', (res) ->
+    if (200 == res.statusCode) 
+      console.log('saved to %s', req.url);
+  )
+  req.end(jsonstr)
+
+
+savejson = (jsonStr) ->  # saves appId.json to apps dir
+  id = JSON.parse(jsonStr)['Id']
+  filename = appdir+id+".json"
+  fs.writeFile filename, jsonStr, {encoding:'utf8'},  (err) ->
+    if (err) 
+      throw err
+    console.log "Local File Written: #{filename}"
+  return filename
+
+buildappsjson = () ->  # rebuilds the /apps/apps.json file
+  fs.readdir './apps', (err, list) ->
+    # console.log list
+    apps = []
+    i = 0
+    for file in list
+      if file != '.DS_Store' and file != 'apps.json'
+        # console.log file
+        app = require('./apps/'+file)
+        if app['Active__c'] is true
+          apps.push(app)
+
+    fs.writeFile './apps/apps.json', JSON.stringify(apps), {encoding:'utf8'},  (err) ->
+    if (err) 
+      throw err
+    console.log "Local File Written: ./apps/apps.json"
+
+S3buildappsjson = () ->  # rebuilds the /apps/apps.json file
+  fs.readdir './apps', (err, list) ->
+    # console.log list
+    apps = []
+    i = 0
+    for file in list
+      if file != '.DS_Store' and file != 'apps.json'
+        # console.log file
+        app = require('./apps/'+file)
+        if app['Active__c'] is true
+          apps.push(app)
+
+    fs.writeFile './apps/apps.json', JSON.stringify(apps), {encoding:'utf8'},  (err) ->
+    if (err) 
+      throw err
+    console.log "Local File Written: ./apps/apps.json"
+
+app.get '/buildappsjson', (req, res) ->
+  buildappsjson() # recreate & save the apps.json file
+  apps = require('./apps/apps.json')
+  # console.dir apps
+  res.send JSON.stringify(apps)
   
