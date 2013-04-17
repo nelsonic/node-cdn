@@ -103,7 +103,6 @@
         return S3upload(apps_filename, JSON.stringify(apps));
       } else {
         console.log("*NEW* App: " + newapp['Id']);
-        console.dir(existing_apps);
         apps.push(newapp);
         console.log("Number of apps with *New* App: " + apps.length);
         appsnew = apps;
@@ -165,9 +164,10 @@
     filename = newapp['Id'] + '.json';
     S3upload(filename, JSON.stringify(newapp));
     console.log('\n # # # # # # # # # \n');
-    console.log(newapp);
+    console.dir(newapp);
     console.log('\n # # # # # # # # # \n');
     S3UpdateAppsJSON(newapp);
+    console.log('\n ------------------- NEXT CALL --------------------- \n');
     return res.end();
   });
 
@@ -178,10 +178,16 @@
   });
 
   app.post('/uploadraw', function(req, res) {
-    var json, newapp;
-    newapp = JSON.parse(req.body.json);
-    json = newapp['json'];
+    var filename, newapp, raw;
+    raw = $.parseJSON(req.body.json);
+    newapp = raw['json'];
+    filename = newapp['Id'] + '.json';
+    S3upload(filename, JSON.stringify(newapp));
+    console.log('\n # # # # # # # # # RAW START \n');
+    console.dir(newapp);
+    console.log('\n # # # # # # # # # RAW END \n');
     S3UpdateAppsJSON(json);
+    console.log('\n ------------------- NEXT CALL --------------------- \n');
     return res.end();
   });
 
