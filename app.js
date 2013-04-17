@@ -160,6 +160,9 @@
 
   app.post('/upload', function(req, res, next) {
     var filename, newapp;
+    console.log('..................................>> req.body');
+    console.dir(req.body);
+    console.log('..................................<< req.body');
     newapp = $.parseJSON(req.body.json);
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP');
     console.log(newapp);
