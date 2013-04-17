@@ -131,6 +131,11 @@ app.post '/upload', (req, res, next) ->
   console.log('..................................>> req:')
   console.dir req
   console.log('..................................<< req')
+
+  console.log('>>            + + + + + +            >> req.body:')
+  console.dir req.body
+  console.log('<<            + + + + + +            << req')
+
   newapp = $.parseJSON( req.body.json )
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
   console.log newapp
