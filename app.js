@@ -162,6 +162,8 @@
     var len, pos1, pos2, pos3, pos4;
     dirty = String(dirty);
     console.log("........................         BODY IS DIRTY!! :-( ");
+    console.log(dirty);
+    console.log("........................   ");
     len = dirty.length;
     console.log("Length: " + len);
     pos1 = dirty.search(/{"attributes":/);
@@ -174,13 +176,13 @@
     console.log("Pos2:" + pos2);
     if (pos2 > 0) {
       console.log("found :false} at " + pos2);
-      dirty = dirty.slice(0, pos2 + 20);
+      dirty = dirty.slice(0, pos2 + 21);
     }
     pos3 = dirty.search(/,"Featured__c":true}/);
     console.log("Pos3:" + pos3);
     if (pos3 > 0) {
       console.log("found :true} at " + pos3);
-      dirty = dirty.slice(0, pos3 + 19);
+      dirty = dirty.slice(0, pos3 + 20);
     }
     pos4 = dirty.search(/' }]/);
     console.log("Pos4:" + pos4);
