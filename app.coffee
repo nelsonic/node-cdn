@@ -157,8 +157,8 @@ app.post '/upload', (req, res, next) ->
   # check for dirt:
   match = /{ 'json : /.test(json)
   match2 = /json : {/.test(json)
+  console.log "Match 1: #{match} -- Match 2: #{match2}"
   if match or match2
-    console.log "Match 1: #{match} -- Match 2: #{match2}"
     try
       json = cleanbodyjson(json)
       newapp = JSON.parse(json)
