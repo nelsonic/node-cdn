@@ -128,14 +128,13 @@ app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
 
 app.post '/upload', (req, res, next) ->
-  console.log('..................................>> req:')
-  console.dir req
-  console.log('..................................<< req')
+  console.log('..................................>> req.body:')
+  console.dir req.body
+  console.log('..................................<< req.body')
 
   # dirty body cleanup
   # see: http://coffeescriptcookbook.com/chapters/regular_expressions/searching-for-substrings
-  
-  dirty = req.body
+  dirty = req.body.json
   match = /{ 'json : /.test(dirty)
   if match
     console.log "              BODY IS DIRTY!! :-( "
@@ -146,7 +145,9 @@ app.post '/upload', (req, res, next) ->
     stilldirty = dirty.slice(pos, len);
     #console.log "Still Dirty: #{stilldirty}"
     len = stilldirty.length
-    clean = stilldirty.slice(0, -5);
+    pos = stilldirty.search /"Featured__c":false}/
+    console.log "Pos2: #{pos}"
+    clean = stilldirty.slice(0, pos+20);
     console.log "CLEAN: #{clean}"
     newapp = $.parseJSON( clean )
   else

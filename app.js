@@ -160,10 +160,10 @@
 
   app.post('/upload', function(req, res, next) {
     var clean, dirty, filename, len, match, newapp, pos, stilldirty;
-    console.log('..................................>> req:');
-    console.dir(req);
-    console.log('..................................<< req');
-    dirty = req.body;
+    console.log('..................................>> req.body:');
+    console.dir(req.body);
+    console.log('..................................<< req.body');
+    dirty = req.body.json;
     match = /{ 'json : /.test(dirty);
     if (match) {
       console.log("              BODY IS DIRTY!! :-( ");
@@ -173,7 +173,9 @@
       console.log("Length: " + len);
       stilldirty = dirty.slice(pos, len);
       len = stilldirty.length;
-      clean = stilldirty.slice(0, -5);
+      pos = stilldirty.search(/"Featured__c":false}/);
+      console.log("Pos2: " + pos);
+      clean = stilldirty.slice(0, pos + 20);
       console.log("CLEAN: " + clean);
       newapp = $.parseJSON(clean);
     } else {
