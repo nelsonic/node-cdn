@@ -159,15 +159,17 @@
   });
 
   cleanbodyjson = function(dirty) {
-    var clean, len, pos, stilldirty;
+    var clean, len, pos;
     dirty = String(dirty);
     console.log("........................         BODY IS DIRTY!! :-( ");
     pos = dirty.search(/{"attributes":/);
     console.log("Pos: " + pos);
     len = dirty.length;
     console.log("Length: " + len);
-    stilldirty = dirty.slice(pos, len);
-    pos = stilldirty.search(/"Featured__c":false}/);
+    if (pos !== -1) {
+      dirty = dirty.slice(pos, len);
+    }
+    pos = dirty.search(/"Featured__c":false}/);
     console.log("Pos2: " + pos);
     clean = stilldirty.slice(0, pos + 20);
     console.log("CLEAN: " + clean);
