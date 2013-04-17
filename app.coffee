@@ -1,15 +1,17 @@
+### jslint nomen: true, plusplus: true, vars: true, indent: 2, node: true ###
+"use strict" # need this for JSLint Pass
 express = require 'express'
 ECT = require 'ect'
 fs = require 'fs'
 Faker = require 'Faker'
 appdir = './apps/'
-port = 3000
+port = process.env.PORT || 5000
 
 # not uploading to S3 till we get the JSONP Right (aprox 2h more work+testing)
 # {NodeCDN} = require('./src') # see: http://stackoverflow.com/a/10772136/1148249
 # S3 = new NodeCDN
 
-### @Todo: Move these Methods to Lib in Next sprint ###
+### MUST: Move these Methods to Lib in Next sprint ###
 
 uniqueId = (length=18) -> # generates a random Id with _TEST prefix for Fake Apps
   id = '_TEST'
@@ -57,6 +59,8 @@ app.configure () ->
 ectRenderer = ECT({ watch: true, root: __dirname + '/views' })
 app.engine('.html', ectRenderer.render)
 
+app.get '/', (req, res) ->
+  res.render('uploadform.html', { title: 'Basic Uploader Form' })
 
 app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
@@ -66,7 +70,7 @@ app.post '/upload', (req, res, next) ->
   res.send {"filename":JSON.parse(req.body.json)['Id']+'.json'}
 
 app.get '/fakeapp', (req, res) ->
-  exampleapp = require('./app-example.json')
+  exampleapp = require('./public/app-example.json')
   exampleapp['Id'] = uniqueId(18)
   exampleapp['Mandatory__c'] = Math.random() < 0.5 ? true : false
   exampleapp['Name'] = Faker.random.bs_buzz()
