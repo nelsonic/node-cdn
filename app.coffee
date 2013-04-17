@@ -129,6 +129,7 @@ app.get '/upload', (req, res) ->
 
 # cleans the $H!T JSON We get from Salesforce
 cleanbodyjson = (dirty) ->
+  dirty = String(dirty)
   console.log "........................         BODY IS DIRTY!! :-( "
   pos = dirty.search /{"attributes":/
   console.log "Pos: #{pos}"

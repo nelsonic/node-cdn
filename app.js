@@ -160,6 +160,7 @@
 
   cleanbodyjson = function(dirty) {
     var clean, len, pos, stilldirty;
+    dirty = String(dirty);
     console.log("........................         BODY IS DIRTY!! :-( ");
     pos = dirty.search(/{"attributes":/);
     console.log("Pos: " + pos);
