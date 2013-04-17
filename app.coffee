@@ -150,28 +150,16 @@ app.post '/upload', (req, res, next) ->
   # dirty body cleanup
   # see: http://coffeescriptcookbook.com/chapters/regular_expressions/searching-for-substrings
   if req.body.json is undefined
-    json = req.body
+    json = req.body # dirty
   else 
-    json = req.body.json
-    dirty = req.body.json
-  # check for dirt:
-  match = /{ 'json : /.test(json)
-  match2 = /'json/.test(json)
-  match3 = json.search /'json/
-  console.log "Match 1: #{match} -- Match 2: #{match2} -- Match 3: #{match3}"
-  if match or match2 or match3 != -1
-    try
-      json = cleanbodyjson(json)
-      newapp = JSON.parse(json)
-    catch error
-      console.log "InVALID JSON"
-      throw error
-  else
-    try
-      newapp = JSON.parse(json)
-    catch error
-      console.log "InVALID JSON"
-      throw error
+    json = req.body.json # maybe clean
+
+  try # cleaning dirt
+    json = cleanbodyjson(json)
+    newapp = JSON.parse(json)
+  catch error
+    console.log "InVALID JSON"
+    throw error
     
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
   console.log newapp
