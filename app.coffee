@@ -71,7 +71,7 @@ S3UpdateAppsJSON = (newapp) ->
       S3upload(apps_filename, JSON.stringify(apps))
     else
       console.log "*NEW* App: #{newapp['Id']}"
-      console.dir existing_apps
+      # console.dir existing_apps
       apps.push newapp 
       console.log "Number of apps with *New* App: #{apps.length}"
       appsnew = apps
@@ -132,9 +132,10 @@ app.post '/upload', (req, res, next) ->
   filename = newapp['Id']+'.json'
   S3upload(filename, JSON.stringify(newapp))
   console.log '\n # # # # # # # # # \n'
-  console.log newapp
+  console.dir newapp
   console.log '\n # # # # # # # # # \n'
   S3UpdateAppsJSON(newapp)
+  console.log('\n ------------------- NEXT CALL --------------------- \n')
   res.end()
 
 
@@ -142,10 +143,17 @@ app.get '/uploadraw', (req, res) ->
   res.render('uploadraw.html', { title: 'Basic Uploader Form' })
 
 app.post '/uploadraw', (req, res) ->
-  newapp = JSON.parse req.body.json
-  json = newapp['json']
+  raw = $.parseJSON( req.body.json )
+  newapp = raw['json']
+  filename = newapp['Id']+'.json'
+  S3upload(filename, JSON.stringify(newapp))
+  console.log '\n # # # # # # # # # RAW START \n'
+  console.dir newapp
+  console.log '\n # # # # # # # # # RAW END \n'
+
   # console.log json
   S3UpdateAppsJSON(json)
+  console.log('\n ------------------- NEXT CALL --------------------- \n')
   res.end()
 
 app.get '/fakeapp', (req, res) ->

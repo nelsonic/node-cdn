@@ -37,7 +37,7 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   	  			expect(newappcount).toBeGreaterThan(window.appcount)
 
   it '/uploadraw', ->
-  	$.getJSON 'app-example-raw.json', (data) ->
+  	$.getJSON '/app-example-raw.json', (data) ->
   		# console.dir data
   		json = data['json']
   		# console.dir json
@@ -45,7 +45,7 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   		console.log "JSON ID :: #{json['Id']}"
   		window.jsonstr = JSON.stringify(json)
   		console.log jsonstr
-  		$.post '/upload', "json": window.jsonstr, (data) ->
+  		$.post '/uploadraw', "json": window.jsonstr, (data) ->
 				# uploadedfile = 'https://mpyc.s3.amazonaws.com/apps/'+window.Id + '.json'
 				# console.log "Fetching: #{uploadedfile}"
 				delay = (ms, func) -> setTimeout func, ms
