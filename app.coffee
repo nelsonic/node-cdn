@@ -139,8 +139,13 @@ cleanbodyjson = (dirty) ->
     dirty = dirty.slice(pos, len);
   #console.log "Still Dirty: #{stilldirty}"
   pos = dirty.search /"Featured__c":false}/
-  console.log "Pos2: #{pos}"
-  clean = stilldirty.slice(0, pos+20);
+  if pos != -1
+    console.log "Pos2: #{pos} - Featured FALSE"
+    clean = dirty.slice(0, pos+20);
+  else 
+    pos = dirty.search /"Featured__c":true}/
+    console.log "Pos2: #{pos} - Featured is TRUE"
+    clean = dirty.slice(0, pos+19);
   console.log "CLEAN: #{clean}"
   return clean
 
