@@ -134,24 +134,28 @@ cleanbodyjson = (dirty) ->
   len = dirty.length
   console.log "Length: #{len}"
   pos1 = dirty.search /{"attributes":/
-  if pos1 != -1
+  console.log("Pos1:#{pos1}")
+  if pos1 > 0
    console.log "found {\"attributes\": at #{pos1}"
    dirty = dirty.slice(pos1, len);
   pos2 = dirty.search /,"Featured__c":false}'/
-  if pos2 != -1
+  console.log("Pos2:#{pos2}")
+  if pos2 > 0
    console.log "found :false} at #{pos2}"
-   clean = dirty.slice(0, pos2+20);
+   dirty = dirty.slice(0, pos2+20);
   pos3 = dirty.search /,"Featured__c":true}/
-  if pos3 != 1
+  console.log("Pos3:#{pos3}")
+  if pos3 > 0
    console.log "found :true} at #{pos3}"
-   clean = dirty.slice(0, pos3+19);
+   dirty = dirty.slice(0, pos3+19);
   pos4 = dirty.search /' }]/
-  if pos4 != -1
+  console.log("Pos4:#{pos4}")
+  if pos4 > 0 
    console.log "found ' }] at #{pos4}"
-   clean = dirty.slice(0, pos4);
+   dirty = dirty.slice(0, pos4);
 
-  console.log "CLEAN: #{clean}"
-  return clean
+  console.log "CLEAN: #{dirty}"
+  return dirty
 
 app.post '/upload', (req, res, next) ->
   console.log('..................................>> req.body:')
