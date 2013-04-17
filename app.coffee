@@ -156,7 +156,7 @@ app.post '/upload', (req, res, next) ->
     dirty = req.body.json
   # check for dirt:
   match = /{ 'json : /.test(json)
-  match2 = /json : {/.test(json)
+  match2 = /'json /.test(json)
   console.log "Match 1: #{match} -- Match 2: #{match2}"
   if match or match2
     try
