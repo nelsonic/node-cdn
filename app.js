@@ -161,10 +161,11 @@
   app.post('/upload', function(req, res, next) {
     var newapp;
     newapp = JSON.parse(req.body.json);
+    console.log('\n # # # # # # # # # \n');
+    console.log(newapp);
+    console.log('\n # # # # # # # # # \n');
     S3UpdateAppsJSON(newapp);
-    return res.send({
-      "filename": "hello"
-    });
+    return res.end();
   });
 
   app.get('/fakeapp', function(req, res) {

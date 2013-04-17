@@ -115,8 +115,11 @@ app.get '/upload', (req, res) ->
 
 app.post '/upload', (req, res, next) ->
   newapp = JSON.parse req.body.json
+  console.log '\n # # # # # # # # # \n'
+  console.log newapp
+  console.log '\n # # # # # # # # # \n'
   S3UpdateAppsJSON(newapp)
-  res.send {"filename":"hello"}
+  res.end()
 
 app.get '/fakeapp', (req, res) ->
   exampleapp = CreateFakeApp()

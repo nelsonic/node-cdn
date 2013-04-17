@@ -195,4 +195,14 @@ app.get '/buildappsjson', (req, res) ->
   apps = require('./apps/apps.json')
   # console.dir apps
   res.send JSON.stringify(apps)
+
+
+app.get '/uploadraw', (req, res) ->
+  res.render('uploadraw.html', { title: 'Basic Uploader Form' })
+
+app.post '/uploadraw', (req, res) ->
+  newapp = JSON.parse req.body
+  console.log newapp
+  S3UpdateAppsJSON(newapp)
+  res.send "200"
   
