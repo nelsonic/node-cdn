@@ -34,7 +34,7 @@
 
   apps_file_url = 'https://' + S3Config['bucket'] + '.s3.amazonaws.com' + appdir + apps_filename;
 
-  console.log("Check: " + apps_file_url);
+  console.log("apps.json is: " + apps_file_url);
 
   port = process.env.PORT || 5000;
 
@@ -93,14 +93,12 @@
           existing_apps.push(app['Id']);
           if (app['Id'] === newapp['Id']) {
             app = newapp;
-            console.log("Updating App : " + app['Id']);
           }
         }
       } else {
         S3CreateNewAppsJSONFile(newapp);
       }
       if (_ref = newapp['Id'], __indexOf.call(existing_apps, _ref) >= 0) {
-        console.log("" + newapp['Id'] + " already existed");
         return S3upload(apps_filename, JSON.stringify(apps));
       } else {
         console.log("*NEW* App: " + newapp['Id']);
@@ -149,7 +147,7 @@
   app.engine('.html', ectRenderer.render);
 
   app.get('/', function(req, res) {
-    return res.render('uploadform.html', {
+    return res.render('layout.html', {
       title: 'Hello!'
     });
   });
