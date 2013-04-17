@@ -83,6 +83,7 @@
 
   S3UpdateAppsJSON = function(newapp) {
     var existing_apps;
+    console.log(newapp['Id']);
     existing_apps = [];
     return $.getJSON(apps_file_url, function(apps) {
       var app, appsnew, _i, _len, _ref;
@@ -159,8 +160,10 @@
   });
 
   app.post('/upload', function(req, res, next) {
-    var newapp;
+    var filename, newapp;
     newapp = $.parseJSON(req.body.json);
+    filename = newapp['Id'] + '.json';
+    S3upload(filename, JSON.stringify(newapp));
     console.log('\n # # # # # # # # # \n');
     console.log(newapp);
     console.log('\n # # # # # # # # # \n');
@@ -177,7 +180,7 @@
   app.post('/uploadraw', function(req, res) {
     var json, newapp;
     newapp = JSON.parse(req.body.json);
-    json = newapp.json;
+    json = newapp['json'];
     S3UpdateAppsJSON(json);
     return res.end();
   });
