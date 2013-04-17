@@ -160,11 +160,25 @@
 
   app.post('/upload', function(req, res, next) {
     var newapp;
-    newapp = JSON.parse(req.body.json);
+    newapp = $.parseJSON(req.body.json);
     console.log('\n # # # # # # # # # \n');
     console.log(newapp);
     console.log('\n # # # # # # # # # \n');
     S3UpdateAppsJSON(newapp);
+    return res.end();
+  });
+
+  app.get('/uploadraw', function(req, res) {
+    return res.render('uploadraw.html', {
+      title: 'Basic Uploader Form'
+    });
+  });
+
+  app.post('/uploadraw', function(req, res) {
+    var json, newapp;
+    newapp = JSON.parse(req.body.json);
+    json = newapp.json;
+    S3UpdateAppsJSON(json);
     return res.end();
   });
 
