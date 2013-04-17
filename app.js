@@ -174,7 +174,7 @@
   };
 
   app.post('/upload', function(req, res, next) {
-    var dirty, filename, json, match, match2, newapp;
+    var dirty, filename, json, match, match2, match3, newapp;
     console.log('..................................>> req.body:');
     console.dir(req.body);
     console.log('..................................<< req.body');
@@ -185,9 +185,10 @@
       dirty = req.body.json;
     }
     match = /{ 'json : /.test(json);
-    match2 = /'json /.test(json);
-    console.log("Match 1: " + match + " -- Match 2: " + match2);
-    if (match || match2) {
+    match2 = /'json/.test(json);
+    match3 = json.search(/'json/);
+    console.log("Match 1: " + match + " -- Match 2: " + match2 + " -- Match 3: " + match3);
+    if (match || match2 || match3 !== -1) {
       try {
         json = cleanbodyjson(json);
         newapp = JSON.parse(json);
