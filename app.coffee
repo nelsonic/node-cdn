@@ -5,6 +5,7 @@ $ = require 'jquery'
 ECT = require 'ect'
 fs = require 'fs'
 Faker = require 'Faker'
+# jsdom = require 'jsdom'
 
 # S3
 require 'js-yaml'              # see: https://github.com/nodeca/js-yaml
@@ -85,6 +86,19 @@ S3CreateNewAppsJSONFile = (newapp) ->
   apps.push(newapp)
   S3upload(apps_filename, JSON.stringify(apps))
 
+#LOOK AWAY NOW or read: http://stackoverflow.com/a/4043513/1148249
+
+# createWindow = (fn) ->
+#   window  = jsdom.jsdom().createWindow()
+#   script = window.document.createElement('script')
+#   jsdom.jsonp(window, -> 
+#     script.src = 'file://' + __dirname + '/jquery.jsonp.js'
+#     script.onload = () ->
+#       if (this.readyState === 'complete')
+#         fn(window)
+
+
+
 # If there is No apps.json FILE on S3
 # or the file contains ZERO Apps
 # we need to create it with this "example" App:
@@ -114,11 +128,21 @@ app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
 
 app.post '/upload', (req, res, next) ->
-  newapp = JSON.parse req.body.json
+  newapp = $.parseJSON( req.body.json )
   console.log '\n # # # # # # # # # \n'
   console.log newapp
   console.log '\n # # # # # # # # # \n'
   S3UpdateAppsJSON(newapp)
+  res.end()
+
+app.get '/uploadraw', (req, res) ->
+  res.render('uploadraw.html', { title: 'Basic Uploader Form' })
+
+app.post '/uploadraw', (req, res) ->
+  newapp = JSON.parse req.body.json
+  json = newapp.json
+  # console.log json
+  S3UpdateAppsJSON(json)
   res.end()
 
 app.get '/fakeapp', (req, res) ->
