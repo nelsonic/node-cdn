@@ -7,7 +7,7 @@
 (function() {
   "use strict";
 
-  var $, CreateFakeApp, ECT, Faker, S3Config, S3CreateNewAppsJSONFile, S3UpdateAppsJSON, S3upload, app, appdir, apps, apps_file_url, apps_filename, cleanbody, client, ectRenderer, exampleapp, express, fs, knox, port, uniqueId,
+  var $, CreateFakeApp, ECT, Faker, S3Config, S3CreateNewAppsJSONFile, S3UpdateAppsJSON, S3upload, app, appdir, apps, apps_file_url, apps_filename, cleanbodyjson, client, ectRenderer, exampleapp, express, fs, knox, port, uniqueId,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   express = require('express');
@@ -158,7 +158,7 @@
     });
   });
 
-  cleanbody = function(dirty) {
+  cleanbodyjson = function(dirty) {
     var clean, len, pos, stilldirty;
     console.log("........................         BODY IS DIRTY!! :-( ");
     pos = dirty.search(/{"attributes":/);
@@ -174,7 +174,7 @@
   };
 
   app.post('/upload', function(req, res, next) {
-    var dirty, filename, json, match, newapp;
+    var dirty, filename, json, match, match2, newapp;
     console.log('..................................>> req.body:');
     console.dir(req.body);
     console.log('..................................<< req.body');
@@ -185,10 +185,11 @@
       dirty = req.body.json;
     }
     match = /{ 'json : /.test(json);
+    match2 = /json : {/.test(json);
     console.log("Matched: " + match);
-    if (match) {
+    if (match || match2) {
       try {
-        json = cleanbody(json);
+        json = cleanbodyjson(json);
         newapp = JSON.parse(json);
       } catch (error) {
         console.log("InVALID JSON");

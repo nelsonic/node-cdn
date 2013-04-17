@@ -128,7 +128,7 @@ app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
 
 # cleans the $H!T JSON We get from Salesforce
-cleanbody = (dirty) ->
+cleanbodyjson = (dirty) ->
   console.log "........................         BODY IS DIRTY!! :-( "
   pos = dirty.search /{"attributes":/
   console.log "Pos: #{pos}"
@@ -156,10 +156,11 @@ app.post '/upload', (req, res, next) ->
     dirty = req.body.json
   # check for dirt:
   match = /{ 'json : /.test(json)
+  match2 = /json : {/.test(json)
   console.log "Matched: #{match}"
-  if match
+  if match or match2
     try
-      json = cleanbody(json)
+      json = cleanbodyjson(json)
       newapp = JSON.parse(json)
     catch error
       console.log "InVALID JSON"
