@@ -162,21 +162,26 @@
     var clean, len, pos;
     dirty = String(dirty);
     console.log("........................         BODY IS DIRTY!! :-( ");
-    pos = dirty.search(/{"attributes":/);
-    console.log("Pos: " + pos);
     len = dirty.length;
     console.log("Length: " + len);
+    pos = dirty.search(/{"/);
     if (pos !== -1) {
+      console.log("Pos: " + pos);
       dirty = dirty.slice(pos, len);
     }
-    pos = dirty.search(/"Featured__c":false}/);
+    pos = dirty.search(/{ "/);
+    if (pos !== -1) {
+      console.log("Pos: " + pos);
+      dirty = dirty.slice(pos, len);
+    }
+    pos = dirty.search(/:false}/);
     if (pos !== -1) {
       console.log("Pos2: " + pos + " - Featured FALSE");
-      clean = dirty.slice(0, pos + 20);
+      clean = dirty.slice(0, pos + 7);
     } else {
-      pos = dirty.search(/"Featured__c":true}/);
+      pos = dirty.search(/:true}/);
       console.log("Pos2: " + pos + " - Featured is TRUE");
-      clean = dirty.slice(0, pos + 19);
+      clean = dirty.slice(0, pos + 6);
     }
     console.log("CLEAN: " + clean);
     return clean;
