@@ -159,29 +159,30 @@
   });
 
   cleanbodyjson = function(dirty) {
-    var clean, len, pos;
+    var clean, len, pos1, pos2, pos3, pos4;
     dirty = String(dirty);
     console.log("........................         BODY IS DIRTY!! :-( ");
     len = dirty.length;
     console.log("Length: " + len);
-    pos = dirty.search(/{"/);
-    if (pos !== -1) {
-      console.log("Pos: " + pos);
-      dirty = dirty.slice(pos, len);
+    pos1 = dirty.search(/{"attributes":/);
+    if (pos1 !== -1) {
+      console.log("found {\"attributes\": at " + pos1);
+      dirty = dirty.slice(pos1, len);
     }
-    pos = dirty.search(/{ "/);
-    if (pos !== -1) {
-      console.log("Pos: " + pos);
-      dirty = dirty.slice(pos, len);
+    pos2 = dirty.search(/,"Featured__c":false}'/);
+    if (pos2 !== -1) {
+      console.log("found :false} at " + pos2);
+      clean = dirty.slice(0, pos2 + 20);
     }
-    pos = dirty.search(/:false}/);
-    if (pos !== -1) {
-      console.log("Pos2: " + pos + " - Featured FALSE");
-      clean = dirty.slice(0, pos + 7);
-    } else {
-      pos = dirty.search(/:true}/);
-      console.log("Pos2: " + pos + " - Featured is TRUE");
-      clean = dirty.slice(0, pos + 6);
+    pos3 = dirty.search(/,"Featured__c":true}/);
+    if (pos3 !== 1) {
+      console.log("found :true} at " + pos3);
+      clean = dirty.slice(0, pos3 + 19);
+    }
+    pos4 = dirty.search(/' }]/);
+    if (pos4 !== -1) {
+      console.log("found ' }] at " + pos4);
+      clean = dirty.slice(0, pos4);
     }
     console.log("CLEAN: " + clean);
     return clean;
