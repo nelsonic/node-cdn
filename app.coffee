@@ -51,7 +51,7 @@ S3upload = (filename, jsonstr) ->
 
 # upsert newapp in apps.json where newapp = json object of an app
 S3UpdateAppsJSON = (newapp) ->
-  # console.log(newapp['Id'])
+  console.log(newapp['Id'])
   existing_apps = []
   $.getJSON apps_file_url, (apps) ->
     console.log "There are #{apps.length} Apps"
@@ -129,18 +129,21 @@ app.get '/upload', (req, res) ->
 
 app.post '/upload', (req, res, next) ->
   newapp = $.parseJSON( req.body.json )
+  filename = newapp['Id']+'.json'
+  S3upload(filename, JSON.stringify(newapp))
   console.log '\n # # # # # # # # # \n'
   console.log newapp
   console.log '\n # # # # # # # # # \n'
   S3UpdateAppsJSON(newapp)
   res.end()
 
+
 app.get '/uploadraw', (req, res) ->
   res.render('uploadraw.html', { title: 'Basic Uploader Form' })
 
 app.post '/uploadraw', (req, res) ->
   newapp = JSON.parse req.body.json
-  json = newapp.json
+  json = newapp['json']
   # console.log json
   S3UpdateAppsJSON(json)
   res.end()

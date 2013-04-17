@@ -36,11 +36,16 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   	  			console.log "Old App Count #{window.appcount} >> new count #{newappcount}"
   	  			expect(newappcount).toBeGreaterThan(window.appcount)
 
-  xit '/uploadraw', ->
-  	$.getJSON '/fakeapp', (json) ->
+  it '/uploadraw', ->
+  	$.getJSON 'app-example-raw.json', (data) ->
+  		# console.dir data
+  		json = data['json']
+  		# console.dir json
   		window.Id = json['Id']
+  		console.log "JSON ID :: #{json['Id']}"
   		window.jsonstr = JSON.stringify(json)
-  		$.post '/uploadraw', window.jsonstr, (data) ->
+  		console.log jsonstr
+  		$.post '/upload', "json": window.jsonstr, (data) ->
 				# uploadedfile = 'https://mpyc.s3.amazonaws.com/apps/'+window.Id + '.json'
 				# console.log "Fetching: #{uploadedfile}"
 				delay = (ms, func) -> setTimeout func, ms
