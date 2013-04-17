@@ -15,7 +15,7 @@ client = knox.createClient(S3Config)
 appdir = '/apps/'
 apps_filename = 'apps.json'
 apps_file_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com' +appdir+apps_filename
-console.log "Check: #{apps_file_url}"
+console.log "apps.json is: #{apps_file_url}"
 port = process.env.PORT || 5000
 
 # {NodeCDN} = require('./src') # see: http://stackoverflow.com/a/10772136/1148249
@@ -59,14 +59,14 @@ S3UpdateAppsJSON = (newapp) ->
         existing_apps.push app['Id']
         # if the app is already in apps.json update it
         if app['Id'] is newapp['Id']
-          app = newapp
-          console.log "Updating App : #{app['Id']}"
+          app = newapp # over-write / upsert it
+          # console.log "Updating App : #{app['Id']}"
 
     else # there are no apps!
       S3CreateNewAppsJSONFile(newapp)
 
     if newapp['Id'] in existing_apps
-      console.log "#{newapp['Id']} already existed"
+      # console.log "#{newapp['Id']} already existed"
       S3upload(apps_filename, JSON.stringify(apps))
     else
       console.log "*NEW* App: #{newapp['Id']}"
@@ -108,7 +108,7 @@ ectRenderer = ECT({ watch: true, root: __dirname + '/views' })
 app.engine('.html', ectRenderer.render)
 
 app.get '/', (req, res) ->
-  res.render('uploadform.html', { title: 'Hello!' })
+  res.render('layout.html', { title: 'Hello!' })
 
 app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
