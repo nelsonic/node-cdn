@@ -161,6 +161,9 @@
   app.post('/upload', function(req, res, next) {
     var filename, newapp;
     newapp = $.parseJSON(req.body.json);
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP');
+    console.log(newapp);
+    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP');
     filename = newapp['Id'] + '.json';
     S3upload(filename, JSON.stringify(newapp));
     console.log('\n # # # # # # # # # \n');

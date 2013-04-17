@@ -129,6 +129,9 @@ app.get '/upload', (req, res) ->
 
 app.post '/upload', (req, res, next) ->
   newapp = $.parseJSON( req.body.json )
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
+  console.log newapp
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP')
   filename = newapp['Id']+'.json'
   S3upload(filename, JSON.stringify(newapp))
   console.log '\n # # # # # # # # # \n'
