@@ -127,6 +127,21 @@ app.get '/', (req, res) ->
 app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
 
+# cleans the $H!T JSON We get from Salesforce
+cleanbody = (dirty) ->
+  console.log "........................         BODY IS DIRTY!! :-( "
+  pos = dirty.search /{"attributes":/
+  console.log "Pos: #{pos}"
+  len = dirty.length
+  console.log "Length: #{len}"
+  stilldirty = dirty.slice(pos, len);
+  #console.log "Still Dirty: #{stilldirty}"
+  pos = stilldirty.search /"Featured__c":false}/
+  console.log "Pos2: #{pos}"
+  clean = stilldirty.slice(0, pos+20);
+  console.log "CLEAN: #{clean}"
+  return clean
+
 app.post '/upload', (req, res, next) ->
   console.log('..................................>> req.body:')
   console.dir req.body
@@ -134,24 +149,28 @@ app.post '/upload', (req, res, next) ->
 
   # dirty body cleanup
   # see: http://coffeescriptcookbook.com/chapters/regular_expressions/searching-for-substrings
-  dirty = req.body.json
-  match = /{ 'json : /.test(dirty)
+  if req.body.json is undefined
+    json = req.body
+  else 
+    json = req.body.json
+    dirty = req.body.json
+  # check for dirt:
+  match = /{ 'json : /.test(json)
+  console.log "Matched: #{match}"
   if match
-    console.log "              BODY IS DIRTY!! :-( "
-    pos = dirty.search /{"attributes":/
-    console.log "Pos: #{pos}"
-    len = dirty.length
-    console.log "Length: #{len}"
-    stilldirty = dirty.slice(pos, len);
-    #console.log "Still Dirty: #{stilldirty}"
-    len = stilldirty.length
-    pos = stilldirty.search /"Featured__c":false}/
-    console.log "Pos2: #{pos}"
-    clean = stilldirty.slice(0, pos+20);
-    console.log "CLEAN: #{clean}"
-    newapp = $.parseJSON( clean )
+    try
+      json = cleanbody(json)
+      newapp = JSON.parse(json)
+    catch error
+      console.log "InVALID JSON"
+      throw error
   else
-    newapp = $.parseJSON( req.body.json )
+    try
+      newapp = JSON.parse(json)
+    catch error
+      console.log "InVALID JSON"
+      throw error
+    
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
   console.log newapp
   console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP')
@@ -162,7 +181,7 @@ app.post '/upload', (req, res, next) ->
   console.log '\n # # # # # # # # # \n'
   S3UpdateAppsJSON(newapp)
   console.log('\n ------------------- NEXT CALL --------------------- \n')
-  res.end()
+  res.send(newapp)
 
 
 app.get '/uploadraw', (req, res) ->

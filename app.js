@@ -7,7 +7,7 @@
 (function() {
   "use strict";
 
-  var $, CreateFakeApp, ECT, Faker, S3Config, S3CreateNewAppsJSONFile, S3UpdateAppsJSON, S3upload, app, appdir, apps, apps_file_url, apps_filename, client, ectRenderer, exampleapp, express, fs, knox, port, uniqueId,
+  var $, CreateFakeApp, ECT, Faker, S3Config, S3CreateNewAppsJSONFile, S3UpdateAppsJSON, S3upload, app, appdir, apps, apps_file_url, apps_filename, cleanbody, client, ectRenderer, exampleapp, express, fs, knox, port, uniqueId,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   express = require('express');
@@ -158,28 +158,49 @@
     });
   });
 
+  cleanbody = function(dirty) {
+    var clean, len, pos, stilldirty;
+    console.log("........................         BODY IS DIRTY!! :-( ");
+    pos = dirty.search(/{"attributes":/);
+    console.log("Pos: " + pos);
+    len = dirty.length;
+    console.log("Length: " + len);
+    stilldirty = dirty.slice(pos, len);
+    pos = stilldirty.search(/"Featured__c":false}/);
+    console.log("Pos2: " + pos);
+    clean = stilldirty.slice(0, pos + 20);
+    console.log("CLEAN: " + clean);
+    return clean;
+  };
+
   app.post('/upload', function(req, res, next) {
-    var clean, dirty, filename, len, match, newapp, pos, stilldirty;
+    var dirty, filename, json, match, newapp;
     console.log('..................................>> req.body:');
     console.dir(req.body);
     console.log('..................................<< req.body');
-    dirty = req.body.json;
-    match = /{ 'json : /.test(dirty);
-    if (match) {
-      console.log("              BODY IS DIRTY!! :-( ");
-      pos = dirty.search(/{"attributes":/);
-      console.log("Pos: " + pos);
-      len = dirty.length;
-      console.log("Length: " + len);
-      stilldirty = dirty.slice(pos, len);
-      len = stilldirty.length;
-      pos = stilldirty.search(/"Featured__c":false}/);
-      console.log("Pos2: " + pos);
-      clean = stilldirty.slice(0, pos + 20);
-      console.log("CLEAN: " + clean);
-      newapp = $.parseJSON(clean);
+    if (req.body.json === void 0) {
+      json = req.body;
     } else {
-      newapp = $.parseJSON(req.body.json);
+      json = req.body.json;
+      dirty = req.body.json;
+    }
+    match = /{ 'json : /.test(json);
+    console.log("Matched: " + match);
+    if (match) {
+      try {
+        json = cleanbody(json);
+        newapp = JSON.parse(json);
+      } catch (error) {
+        console.log("InVALID JSON");
+        throw error;
+      }
+    } else {
+      try {
+        newapp = JSON.parse(json);
+      } catch (error) {
+        console.log("InVALID JSON");
+        throw error;
+      }
     }
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP');
     console.log(newapp);
@@ -191,7 +212,7 @@
     console.log('\n # # # # # # # # # \n');
     S3UpdateAppsJSON(newapp);
     console.log('\n ------------------- NEXT CALL --------------------- \n');
-    return res.end();
+    return res.send(newapp);
   });
 
   app.get('/uploadraw', function(req, res) {
