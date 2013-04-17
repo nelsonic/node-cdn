@@ -7,9 +7,12 @@
 (function() {
   "use strict";
 
-  var ECT, Faker, app, appdir, buildappsjson, ectRenderer, express, fs, port, savejson, uniqueId;
+  var $, CreateFakeApp, ECT, Faker, S3Config, S3CreateNewAppsJSONFile, S3UpdateAppsJSON, S3upload, app, appdir, apps, apps_file_url, apps_filename, client, ectRenderer, exampleapp, express, fs, knox, port, uniqueId,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   express = require('express');
+
+  $ = require('jquery');
 
   ECT = require('ect');
 
@@ -17,11 +20,25 @@
 
   Faker = require('Faker');
 
-  appdir = './apps/';
+  require('js-yaml');
+
+  S3Config = require('./config/S3.yml');
+
+  knox = require('knox');
+
+  client = knox.createClient(S3Config);
+
+  appdir = '/apps/';
+
+  apps_filename = 'apps.json';
+
+  apps_file_url = 'https://' + S3Config['bucket'] + '.s3.amazonaws.com' + appdir + apps_filename;
+
+  console.log("Check: " + apps_file_url);
 
   port = process.env.PORT || 5000;
 
-  /* MUST: Move these Methods to Lib in Next sprint
+  /* MUST Move these Methods to Lib in Next sprint
   */
 
 
@@ -37,44 +54,78 @@
     return id.substr(0, length);
   };
 
-  savejson = function(jsonStr) {
-    var filename, id;
-    id = JSON.parse(jsonStr)['Id'];
-    filename = appdir + id + ".json";
-    return fs.writeFile(filename, jsonStr, {
-      encoding: 'utf8'
-    }, function(err) {
-      if (err) {
-        throw err;
+  CreateFakeApp = function() {
+    var exampleapp, _ref;
+    exampleapp = require('./public/app-example.json');
+    exampleapp['Id'] = uniqueId(18);
+    exampleapp['Mandatory__c'] = (_ref = Math.random() < 0.5) != null ? _ref : {
+      "true": false
+    };
+    exampleapp['Name'] = Faker.random.bs_buzz();
+    exampleapp['Description__c'] = Faker.Lorem.sentence();
+    return exampleapp;
+  };
+
+  S3upload = function(filename, jsonstr) {
+    var req;
+    req = client.put(appdir + filename, {
+      'Content-Length': jsonstr.length,
+      'Content-Type': 'application/json',
+      'x-amz-acl': 'public-read'
+    });
+    req.on('response', function(res) {
+      if (200 === res.statusCode) {
+        return console.log('saved to %s', req.url);
       }
-      console.log("Local File Written: " + filename);
-      return filename;
+    });
+    return req.end(jsonstr);
+  };
+
+  S3UpdateAppsJSON = function(newapp) {
+    var existing_apps;
+    existing_apps = [];
+    return $.getJSON(apps_file_url, function(apps) {
+      var app, appsnew, _i, _len, _ref;
+      console.log("There are " + apps.length + " Apps");
+      if (apps.length > 0) {
+        for (_i = 0, _len = apps.length; _i < _len; _i++) {
+          app = apps[_i];
+          existing_apps.push(app['Id']);
+          if (app['Id'] === newapp['Id']) {
+            app = newapp;
+            console.log("Updating App : " + app['Id']);
+          }
+        }
+      } else {
+        S3CreateNewAppsJSONFile(newapp);
+      }
+      if (_ref = newapp['Id'], __indexOf.call(existing_apps, _ref) >= 0) {
+        console.log("" + newapp['Id'] + " already existed");
+        return S3upload(apps_filename, JSON.stringify(apps));
+      } else {
+        console.log("*NEW* App: " + newapp['Id']);
+        console.dir(existing_apps);
+        apps.push(newapp);
+        console.log("Number of apps with *New* App: " + apps.length);
+        appsnew = apps;
+        return S3upload(apps_filename, JSON.stringify(appsnew));
+      }
+    }).error(function() {
+      console.log('error fetching apps.json ... CREATE it!');
+      return S3CreateNewAppsJSONFile(newapp);
     });
   };
 
-  buildappsjson = function() {
-    return fs.readdir('./apps', function(err, list) {
-      var app, apps, file, i, _i, _len;
-      apps = [];
-      i = 0;
-      for (_i = 0, _len = list.length; _i < _len; _i++) {
-        file = list[_i];
-        if (file !== '.DS_Store' && file !== 'apps.json') {
-          app = require('./apps/' + file);
-          if (app['Active__c'] === true) {
-            apps.push(app);
-          }
-        }
-      }
-      fs.writeFile('./apps/apps.json', JSON.stringify(apps), {
-        encoding: 'utf8'
-      }, function(err) {});
-      if (err) {
-        throw err;
-      }
-      return console.log("Local File Written: ./apps/apps.json");
-    });
+  S3CreateNewAppsJSONFile = function(newapp) {
+    var apps;
+    apps = [];
+    apps.push(newapp);
+    return S3upload(apps_filename, JSON.stringify(apps));
   };
+
+  exampleapp = require('./public/app-example.json');
+
+  apps = S3UpdateAppsJSON(exampleapp);
 
   /* The Mini Express App
   */
@@ -99,7 +150,7 @@
 
   app.get('/', function(req, res) {
     return res.render('uploadform.html', {
-      title: 'Basic Uploader Form'
+      title: 'Hello!'
     });
   });
 
@@ -110,22 +161,16 @@
   });
 
   app.post('/upload', function(req, res, next) {
-    var filename;
-    filename = savejson(req.body.json);
+    var newapp;
+    newapp = JSON.parse(req.body.json);
+    S3UpdateAppsJSON(newapp);
     return res.send({
-      "filename": JSON.parse(req.body.json)['Id'] + '.json'
+      "filename": "hello"
     });
   });
 
   app.get('/fakeapp', function(req, res) {
-    var exampleapp, _ref;
-    exampleapp = require('./public/app-example.json');
-    exampleapp['Id'] = uniqueId(18);
-    exampleapp['Mandatory__c'] = (_ref = Math.random() < 0.5) != null ? _ref : {
-      "true": false
-    };
-    exampleapp['Name'] = Faker.random.bs_buzz();
-    exampleapp['Description__c'] = Faker.Lorem.sentence();
+    exampleapp = CreateFakeApp();
     return res.send(exampleapp);
   });
 
@@ -141,11 +186,10 @@
     });
   });
 
-  app.get('/buildappsjson', function(req, res) {
-    var apps;
-    buildappsjson();
-    apps = require('./apps/apps.json');
-    return res.send(JSON.stringify(apps));
+  app.get('/appsjson', function(req, res) {
+    return $.getJSON(apps_file_url, function(json) {
+      return res.send(json);
+    });
   });
 
   app.listen(port);
