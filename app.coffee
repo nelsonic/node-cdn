@@ -186,10 +186,10 @@ app.get '/s3url', (req, res) ->
   res.send { url: 'http://'+S3.S3Config.bucket+'.s3.amazonaws.com/' }
 
 app.get '/appsjson', (req, res) ->
-  jsonlocal = require('./apps/apps.json')
-  res.send jsonlocal
-  # $.getJSON apps_file_url, (json) ->
-  #   res.send json
+  # jsonlocal = require('./apps/apps.json')
+  # res.send jsonlocal
+  $.getJSON apps_file_url, (json) ->
+    res.send json
 
 
 

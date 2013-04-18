@@ -243,9 +243,9 @@
   });
 
   app.get('/appsjson', function(req, res) {
-    var jsonlocal;
-    jsonlocal = require('./apps/apps.json');
-    return res.send(jsonlocal);
+    return $.getJSON(apps_file_url, function(json) {
+      return res.send(json);
+    });
   });
 
   app.listen(port);
