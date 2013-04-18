@@ -157,6 +157,7 @@ Must make time for:
     - http://gruntjs.com/sample-gruntfile
 * Travis: http://blog.bob.sh/2012/01/travis-ci.html
 
+* Heroku with nodejs intro: https://devcenter.heroku.com/articles/nodejs
 
 ## License 
 

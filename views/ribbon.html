@@ -9,33 +9,13 @@
 <h2> App Ribbon </h2>
 
 <div id="ribbon-container">
-
+	<ul class="slider2" id="ribbon">
+	</ul>
 </div>
 
-<ul class="slider2" id="ribbon">
-  <li class="slide"><img src="http://placehold.it/350x150&text=FooBar1"></li>
-  <li class="slide"><img src="http://placehold.it/350x150&text=FooBar2"></li>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar3"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar4"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar5"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar6"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar7"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar8"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar9"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar10"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar1"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar2"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar3"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar4"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar5"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar6"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar7"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar8"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar9"></div>
-  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar10"></div>
-</ul>
 
-<table id="available_apps">
+
+<table id="available_apps" class="table table-striped">
 
 </table>
 
@@ -63,29 +43,41 @@
   <!-- CoffeeScript -->
 <script type="text/coffeescript">
   $ ->
-		$.getJSON '/appsjson', (apps) ->
-			rows = ''
+		$.getJSON '/apps.json', (apps) -> # '/appsjson', (apps) ->
+			rows = '''<thead> <tr>  
+            <th> </th>  
+            <th>App Name</th>  
+            <th>Description</th>  
+            <th>Required</th> 
+            <th>Visible on Ribbon</th>  
+          </tr>  
+        </thead> <tbody>'''
 			ribbon = ''
 			i = 1
 			# build the ribbon
 			for app in apps when app['Active__c'] == true
-				ribbon += "<li class='slide'> <img src='#{app['Application_Icon_Url__c']}' "
-				ribbon += " href='#{app['Application_URL__c']}'>"
+				ribbon += "<li class='slide'> <a href='#{app['Application_URL__c']}'>"
+				ribbon +=	"<img src='#{app['Application_Icon_Url__c']}'></a> "
 				ribbon += "<p class='appname'> #{app['Name']} </p> </li>"
 
 			for app in apps when app['Active__c'] == true
 				for k,v of app when i == 1
-					console.log "#{k} : #{v}"
+					console.log "#{k} : #{v}" # just so we have a list of the available fields
 				rows += '<tr>'
 				rows += "<td> <img src='#{app['Application_Icon_Url__c']}'> </td>"
 				rows += "<td> #{app['Name']} </td>"
-				console.log "#{i++} | #{app['Id']} | #{app['Name']}"
+				rows += "<td> #{app['Description__c']} </td>"
+				if app['Mandatory__c'] == true
+					rows += "<td><i class='icon-ok'></i></td>"
+				else
+					rows += "<td></td>"
+				rows += "<td> <button id='button_#{app['Id']}'type='submit' class='btn btn-danger'>Hide</button></td>"
+				console.log "#{i++} | #{app['Id']} | #{app['Name']} | Mandatory: #{app['Mandatory__c']}"
 				rows += '</tr>'
 				i++
 			console.log(rows)
-
-
-			# $('#available_apps').html(rows)
+			rows += '</tbody>'
+			$('#available_apps').html(rows)
 			$('#ribbon').html(ribbon)
 			$('.bx-prev').css('left', '-42px')
 			show_ribbon()

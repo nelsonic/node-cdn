@@ -148,8 +148,8 @@
   app.engine('.html', ectRenderer.render);
 
   app.get('/', function(req, res) {
-    return res.render('layout.html', {
-      title: 'Hello!'
+    return res.render('ribbon.html', {
+      title: 'App Ribbon Test'
     });
   });
 
@@ -225,46 +225,6 @@
     return res.send(newapp);
   });
 
-  app.get('/uploadraw', function(req, res) {
-    return res.render('uploadraw.html', {
-      title: 'Basic Uploader Form'
-    });
-  });
-
-  app.post('/uploadraw', function(req, res) {
-    var filename, json, json_no_quotes, len, newapp, posbackslash;
-    console.log('                                               <RAW>');
-    console.log("\n    req.body: " + (typeof req.body));
-    console.dir(req.body);
-    json = JSON.stringify(req.body);
-    console.log("\n    json " + (typeof json));
-    console.log(json);
-    json_no_quotes = json.replace(/\\"/g, '"');
-    console.log("\n    json backslash-quotes removed - parsed: " + (typeof json));
-    console.log(json_no_quotes);
-    json = cleanbodyjson(json);
-    console.log("\n    json - After SECOND Clean: " + (typeof json));
-    json = json.replace(/\\"/g, '"');
-    len = json.length;
-    posbackslash = json.search(/\\/);
-    console.log("Backslash : " + posbackslash + " =? " + len);
-    if (posbackslash === len - 1) {
-      json = json.slice(0, posbackslash);
-    }
-    console.log("\n    json - After removing backslash: " + (typeof json));
-    console.log(json);
-    newapp = JSON.parse(json);
-    console.log("\n    newapp - from raw: " + (typeof newapp));
-    console.dir(newapp);
-    filename = newapp['Id'] + '.json';
-    console.log('    filename - from raw: ');
-    console.log(filename);
-    console.log('                                               </RAW>');
-    S3upload(filename, JSON.stringify(newapp));
-    S3UpdateAppsJSON(json);
-    return res.end();
-  });
-
   app.get('/fakeapp', function(req, res) {
     exampleapp = CreateFakeApp();
     return res.send(exampleapp);
@@ -283,9 +243,9 @@
   });
 
   app.get('/appsjson', function(req, res) {
-    return $.getJSON(apps_file_url, function(json) {
-      return res.send(json);
-    });
+    var jsonlocal;
+    jsonlocal = require('./apps/apps.json');
+    return res.send(jsonlocal);
   });
 
   app.listen(port);
