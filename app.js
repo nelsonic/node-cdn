@@ -223,6 +223,8 @@
     try {
       json = cleanbodyjson(json);
       newapp = JSON.parse(json);
+      newapp = cleanbodyjson(json);
+      newapp = JSON.parse(json);
     } catch (error) {
       console.log("InVALID JSON");
       throw error;
