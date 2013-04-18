@@ -195,7 +195,7 @@
       dirty = dirty.slice(0, pos4);
     }
     console.log("CLEAN: " + dirty);
-    return dirty;
+    return dirty.replace(/\\"/g, '"');
   };
 
   app.post('/upload', function(req, res, next) {

@@ -241,5 +241,30 @@ app.post '/uploadraw', (req, res) ->
 #       if (this.readyState === 'complete')
 #         fn(window)
 
+dirty = '''
+{ json: 'json : {"attributes":{"type":"Application__c","url":"/services/data/v27.0/sobjects/Application__c/a07b0000004bYxYAAU"},"Mandatory__c":false,"LastModifiedById":"005b0000000MGa7AAG","OwnerId":"005b0000000MGa7AAG","LastModifiedDate":"2013-04-17T21:26:11.000+0000","Default__c":false,"Application_Icon_Url__c":"https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERoAAM&oid=00Db0000000I3q2EAC","Active__c":false,"Application_URL__c":"http://edse-web/editorial_services/archives/records_management.html","Name":"Archiving","Application_Icon_Preview__c":"_IM1_https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERoAAM&oid=00Db0000000I3q2EAC_IM2_ _IM3__30_IM4_30_IM5_","SystemModstamp":"2013-04-17T21:26:11.000+0000","CreatedById":"005b0000000MGa7AAG","CreatedDate":"2013-04-12T08:32:36.000+0000","Featured_Banner_Preview__c":"No Image Uploaded","IsDeleted":false,"Id":"a07b0000004bYxYAAU","Description__c":"Archive and record office information","Featured__c":false}' }]
+'''
 
+dirty = String(dirty)
+console.log "........................         BODY IS DIRTY!! :-( "
+len = dirty.length
+console.log "Length: #{len}"
+pos1 = dirty.search /{"attributes":/
+if pos1 != -1
+ console.log "found {\"attributes\": at #{pos}"
+ dirty = dirty.slice(pos1, len);
+pos2 = dirty.search /,"Featured__c":false}'/
+if pos2 != -1
+ console.log "found :false} at #{pos2}"
+ clean = dirty.slice(0, pos2+20);
+pos3 = dirty.search /,"Featured__c":true}/
+if pos3 != 1
+ console.log "found :true} at #{pos}"
+ clean = dirty.slice(0, pos3+19);
+pos4 = dirty.search /' }]/
+if pos4 != -1
+ console.log "found ' }] at #{pos}"
+ clean = dirty.slice(0, pos4);
+
+console.log "CLEAN: #{clean}"
   
