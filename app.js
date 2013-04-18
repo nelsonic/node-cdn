@@ -160,7 +160,7 @@
   });
 
   cleanbodyjson = function(dirty) {
-    var len, pos1, pos2, pos3, pos4;
+    var len, pos1, pos2, pos3, pos4, pos5;
     console.log("........................         BODY IS DIRTY!! :-( ");
     console.dir(dirty);
     console.log("........................   ");
@@ -194,6 +194,12 @@
     if (pos4 > 0) {
       console.log("found ' }] at " + pos4);
       dirty = dirty.slice(0, pos4);
+    }
+    pos5 = dirty.search(/"}]/);
+    console.log("Pos4:" + pos5);
+    if (pos5 > 0) {
+      console.log("found ' }] at " + pos5);
+      dirty = dirty.slice(0, pos5);
     }
     console.log("CLEAN: " + dirty);
     return dirty;
