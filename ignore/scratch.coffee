@@ -228,4 +228,18 @@ app.post '/uploadraw', (req, res) ->
       console.log "InVALID JSON"
       throw error
 
+
+
+#LOOK AWAY NOW or read: http://stackoverflow.com/a/4043513/1148249
+
+# createWindow = (fn) ->
+#   window  = jsdom.jsdom().createWindow()
+#   script = window.document.createElement('script')
+#   jsdom.jsonp(window, -> 
+#     script.src = 'file://' + __dirname + '/jquery.jsonp.js'
+#     script.onload = () ->
+#       if (this.readyState === 'complete')
+#         fn(window)
+
+
   

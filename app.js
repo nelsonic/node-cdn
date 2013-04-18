@@ -57,6 +57,7 @@
   CreateFakeApp = function() {
     var exampleapp, _ref;
     exampleapp = require('./public/app-example.json');
+    exampleapp['Active__c'] = false;
     exampleapp['Id'] = uniqueId(18);
     exampleapp['Mandatory__c'] = (_ref = Math.random() < 0.5) != null ? _ref : {
       "true": false

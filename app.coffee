@@ -31,6 +31,7 @@ uniqueId = (length=18) -> # generates a random Id with _TEST prefix for Fake App
 
 CreateFakeApp = () ->
   exampleapp = require('./public/app-example.json')
+  exampleapp['Active__c'] = false
   exampleapp['Id'] = uniqueId(18)
   exampleapp['Mandatory__c'] = Math.random() < 0.5 ? true : false
   exampleapp['Name'] = Faker.random.bs_buzz()
@@ -85,19 +86,6 @@ S3CreateNewAppsJSONFile = (newapp) ->
   apps = []
   apps.push(newapp)
   S3upload(apps_filename, JSON.stringify(apps))
-
-#LOOK AWAY NOW or read: http://stackoverflow.com/a/4043513/1148249
-
-# createWindow = (fn) ->
-#   window  = jsdom.jsdom().createWindow()
-#   script = window.document.createElement('script')
-#   jsdom.jsonp(window, -> 
-#     script.src = 'file://' + __dirname + '/jquery.jsonp.js'
-#     script.onload = () ->
-#       if (this.readyState === 'complete')
-#         fn(window)
-
-
 
 # If there is No apps.json FILE on S3
 # or the file contains ZERO Apps

@@ -6,7 +6,7 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   		console.log "Number of apps: #{window.appcount} (before re-building apps.json)"
   		i = 1
   		for app in json 
-  			console.log "#{i++} : #{app['Id']} : #{app['Name']}"
+  			console.log "#{i++} : #{app['Id']} : #{app['Name']} -- Active__c = #{app['Active__c']}"
   			expect(window.appcount).toBeGreaterThan(0) #  >> re-work this!
 
 
@@ -16,13 +16,13 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
 
     $.getJSON 'fakeapp', (json) ->
     	console.log("Id #{json['Id']} length #{json['Id'].length} == 18")
-    	expect(json["Active__c"]).toEqual(true)
+    	expect(json["Active__c"]).toEqual(false)
     	expect(json["Id"].length).toEqual(18)
 
     	# feel free to write other expectations here just keeping it simple
 
   it 'POST /upload should upload/update apps.json on S3', ->
-  	# When submitting a POST Request to /upload with JSon
+  	# When submitting a POST Request 	to /upload with JSon
   	$.getJSON '/fakeapp', (json) ->
   		window.Id = json['Id']
   		window.jsonstr = JSON.stringify(json)
