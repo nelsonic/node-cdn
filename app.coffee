@@ -164,8 +164,13 @@ app.post '/upload', (req, res, next) ->
   console.dir req.body
   console.log('..................................<< req.body')
 
-  # dirty body cleanup
-  # see: http://coffeescriptcookbook.com/chapters/regular_expressions/searching-for-substrings
+  try
+    console.log('..................................??? req.body.json')
+    console.dir req.body.json
+    console.log('..................................??? req.body.json')
+  catch error
+    console.log "InVALID JSON"
+    
   if req.body.json is undefined
     json = req.body # dirty
   else 

@@ -198,6 +198,13 @@
     console.log('..................................>> req.body:');
     console.dir(req.body);
     console.log('..................................<< req.body');
+    try {
+      console.log('..................................??? req.body.json');
+      console.dir(req.body.json);
+      console.log('..................................??? req.body.json');
+    } catch (error) {
+      console.log("InVALID JSON");
+    }
     if (req.body.json === void 0) {
       json = req.body;
     } else {
