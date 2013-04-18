@@ -131,15 +131,14 @@ cleanbodyjson = (dirty) ->
   console.log "{\"attributes\" : #{pos1}"
   if pos1 > 0
     dirty = dirty.slice(pos1, len)
-
-  pos2 = dirty.search /"Featured__c":false/
+  pos2 = dirty.search /"Featured__c":false}/
   console.log " :false} : #{pos2}"
   if pos2 > 0
-    dirty = dirty.slice(0, pos2+21)
+    dirty = dirty.slice(0, pos2+20)
   pos3 = dirty.search /"Featured__c":true/
   console.log " :true} : #{pos3}"
   if pos3 > 0
-    dirty = dirty.slice(0, pos3+20);
+    dirty = dirty.slice(0, pos3+19);
   pos4 = dirty.search /' }]/
   console.log "' }] : #{pos4}"
   if pos4 > 0 
@@ -148,6 +147,7 @@ cleanbodyjson = (dirty) ->
   console.log " \"}] : #{pos5}"
   if pos5 > 0 
     dirty = dirty.slice(0, pos5);
+  dirty.replace(/id":"/g, 'id=')
   console.log "CLEAN: #{dirty}"
   return dirty
 
@@ -162,6 +162,9 @@ app.post '/upload', (req, res, next) ->
     else 
       json = req.body.json # maybe clean
     json = cleanbodyjson(json)
+    len = json.length
+    if json.charAt len is '"'
+      json = json.slice(0,len)
     newapp = JSON.parse(json)
   catch error
     console.log "InVALID JSON"
