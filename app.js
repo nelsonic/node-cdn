@@ -163,6 +163,10 @@
     console.log("........................         BODY IS DIRTY!! :-( ");
     console.dir(dirty);
     console.log("........................   ");
+    console.log("     TYPE : " + (typeof dirty));
+    if (typeof dirty === 'object') {
+      dirty = JSON.stringify(dirty);
+    }
     len = dirty.length;
     console.log("Length: " + len);
     pos1 = dirty.search(/{"attributes":/);

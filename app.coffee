@@ -133,6 +133,9 @@ cleanbodyjson = (dirty) ->
   console.dir dirty
   console.log "........................   "
   # dirty = String(dirty)
+  console.log("     TYPE : #{typeof dirty}")
+  if typeof dirty is 'object'
+    dirty = JSON.stringify(dirty)
   len = dirty.length
   console.log "Length: #{len}"
   pos1 = dirty.search /{"attributes":/
