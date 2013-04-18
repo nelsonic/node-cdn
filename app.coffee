@@ -123,10 +123,7 @@ cleanbodyjson = (dirty) ->
   # dirty = String(dirty)
   console.log("     TYPE : #{typeof dirty}")
   if typeof dirty is 'object'
-    if dirty['json'] is not undefined
-      dirty = JSON.stringify(dirty['json'])
-    else
-      dirty = JSON.stringify(dirty)
+    dirty = JSON.stringify(dirty)
     dirty.replace(/\\"/g, '"')
   len = dirty.length
   console.log "Length: #{len}"
@@ -158,13 +155,6 @@ app.post '/upload', (req, res, next) ->
   console.log('..................................>> req.body:')
   console.dir req.body
   console.log('..................................<< req.body')
-
-  try
-    console.log('..................................??? req.body.json')
-    console.dir req.body.json
-    console.log('..................................??? req.body.json')
-  catch error
-    console.log "InVALID JSON"
     
   if req.body.json is undefined
     json = req.body # dirty

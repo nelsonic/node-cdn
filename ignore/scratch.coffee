@@ -267,4 +267,14 @@ if pos4 != -1
  clean = dirty.slice(0, pos4);
 
 console.log "CLEAN: #{clean}"
+
+
+
+
+  try
+    console.log('..................................??? req.body.json')
+    console.dir req.body.json
+    console.log('..................................??? req.body.json')
+  catch error
+    console.log "InVALID JSON"
   
