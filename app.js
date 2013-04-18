@@ -199,11 +199,10 @@
   app.post('/upload', function(req, res, next) {
     var filename, json, newapp;
     console.log('..................................>> req.body :');
-    console.dir(req.body);
+    console.log(req.body);
     console.log('..................................<< req.body');
     try {
       json = req.body.json;
-      json = cleanbodyjson(json);
       newapp = JSON.parse(json);
     } catch (error) {
       console.log("InVALID JSON");

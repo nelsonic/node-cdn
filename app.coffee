@@ -153,12 +153,12 @@ cleanbodyjson = (dirty) ->
 
 app.post '/upload', (req, res, next) ->
   console.log('..................................>> req.body :')
-  console.dir req.body
+  console.log req.body
   console.log('..................................<< req.body')
 
   try # cleaning dirt
     json = req.body.json # maybe clean
-    json = cleanbodyjson(json)
+    # json = cleanbodyjson(json)
     newapp = JSON.parse(json)
   catch error
     console.log "InVALID JSON"
