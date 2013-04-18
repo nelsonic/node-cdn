@@ -135,11 +135,11 @@ cleanbodyjson = (dirty) ->
   pos2 = dirty.search /"Featured__c":false/
   console.log " :false} : #{pos2}"
   if pos2 > 0
-    dirty = dirty.slice(0, pos2+20)
+    dirty = dirty.slice(0, pos2+21)
   pos3 = dirty.search /"Featured__c":true/
   console.log " :true} : #{pos3}"
   if pos3 > 0
-    dirty = dirty.slice(0, pos3+19);
+    dirty = dirty.slice(0, pos3+20);
   pos4 = dirty.search /' }]/
   console.log "' }] : #{pos4}"
   if pos4 > 0 
