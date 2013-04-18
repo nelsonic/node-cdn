@@ -132,11 +132,11 @@ cleanbodyjson = (dirty) ->
   if pos1 > 0
     dirty = dirty.slice(pos1, len)
 
-  pos2 = dirty.search /,"Featured__c":false}'/
+  pos2 = dirty.search /"Featured__c":false'/
   console.log " :false} : #{pos2}"
   if pos2 > 0
     dirty = dirty.slice(0, pos2+21)
-  pos3 = dirty.search /,"Featured__c":true}/
+  pos3 = dirty.search /"Featured__c":true/
   console.log " :true} : #{pos3}"
   if pos3 > 0
     dirty = dirty.slice(0, pos3+20);
@@ -148,7 +148,7 @@ cleanbodyjson = (dirty) ->
   console.log " \"}] : #{pos5}"
   if pos5 > 0 
     dirty = dirty.slice(0, pos5);
-  # console.log "CLEAN: #{dirty}"
+  console.log "CLEAN: #{dirty}"
   return dirty
 
 app.post '/upload', (req, res, next) ->
