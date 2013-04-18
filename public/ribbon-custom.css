@@ -1,0 +1,50 @@
+body { margin-left: 20px; }
+
+#bx-viewport {
+	height: 60px;
+  overflow: hidden;
+  position: relative;
+  width: 95%;
+  margin-left: 2%;
+}
+
+#ribbon {
+	visibility: hidden;
+
+}
+
+.appname {
+ 	color: #000000;
+  font-family: 'open_sansbold';
+  font-size: .8em;
+  padding-top: 4px;
+  text-align: center;
+  text-decoration: none;
+	text-rendering: optimizelegibility;
+  width: 35px;
+
+}
+
+.slide {
+width: 40px;
+}
+
+#ribbon_viewport {
+	height: 105px !important;
+
+}
+
+.bx-next {
+	right: -40px !important;
+}
+.bx-prev {
+	left: -40px !important;
+
+}
+
+#available_apps {
+	width: 800px;
+	margin:0px auto;
+
+
+}
