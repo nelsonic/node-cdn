@@ -167,6 +167,7 @@
     console.log("     TYPE : " + (typeof dirty));
     if (typeof dirty === 'object') {
       dirty = JSON.stringify(dirty);
+      dirty.replace(/\\"/g, '"');
     }
     len = dirty.length;
     console.log("Length: " + len);
