@@ -160,9 +160,8 @@
 
   cleanbodyjson = function(dirty) {
     var len, pos1, pos2, pos3, pos4;
-    dirty = String(dirty);
     console.log("........................         BODY IS DIRTY!! :-( ");
-    console.log(dirty);
+    console.dir(dirty);
     console.log("........................   ");
     len = dirty.length;
     console.log("Length: " + len);
