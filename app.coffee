@@ -157,8 +157,11 @@ app.post '/upload', (req, res, next) ->
   console.log('..................................<< req.body')
 
   try # cleaning dirt
-    json = req.body.json # maybe clean
-    # json = cleanbodyjson(json)
+    if req.body.json is undefined
+      json = req.body # dirty
+    else 
+      json = req.body.json # maybe clean
+    json = cleanbodyjson(json)
     newapp = JSON.parse(json)
   catch error
     console.log "InVALID JSON"

@@ -202,7 +202,12 @@
     console.log(req.body);
     console.log('..................................<< req.body');
     try {
-      json = req.body.json;
+      if (req.body.json === void 0) {
+        json = req.body;
+      } else {
+        json = req.body.json;
+      }
+      json = cleanbodyjson(json);
       newapp = JSON.parse(json);
     } catch (error) {
       console.log("InVALID JSON");
