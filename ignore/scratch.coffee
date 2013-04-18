@@ -277,4 +277,10 @@ console.log "CLEAN: #{clean}"
     console.log('..................................??? req.body.json')
   catch error
     console.log "InVALID JSON"
+
+
+  if req.body.json is undefined
+    json = req.body # dirty
+  else 
+    json = req.body.json # maybe clean
   

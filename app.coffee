@@ -117,9 +117,9 @@ app.get '/upload', (req, res) ->
 
 # cleans the $H!T JSON We get from Salesforce
 cleanbodyjson = (dirty) ->
-  console.log "........................         BODY IS DIRTY!! :-( "
-  console.dir dirty
-  console.log "........................   "
+  # console.log "........................         BODY IS DIRTY!! :-( "
+  # console.dir dirty
+  # console.log "........................   "
   # dirty = String(dirty)
   console.log("     TYPE : #{typeof dirty}")
   if typeof dirty is 'object'
@@ -128,69 +128,45 @@ cleanbodyjson = (dirty) ->
   len = dirty.length
   console.log "Length: #{len}"
   pos1 = dirty.search /{"attributes":/
-  console.log("Pos1:#{pos1}")
+  console.log "{\"attributes\" : #{pos1}"
   if pos1 > 0
-   console.log "found {\"attributes\": at #{pos1}"
-   dirty = dirty.slice(pos1, len);
-  pos2 = dirty.search /,"Featured__c":false}'/
-  console.log("Pos2:#{pos2}")
-  if pos2 > 0
-   console.log "found :false} at #{pos2}"
-   dirty = dirty.slice(0, pos2+21);
-  pos3 = dirty.search /,"Featured__c":true}/
-  console.log("Pos3:#{pos3}")
-  if pos3 > 0
-   console.log "found :true} at #{pos3}"
-   dirty = dirty.slice(0, pos3+20);
-  pos4 = dirty.search /' }]/
-  console.log("Pos4:#{pos4}")
-  if pos4 > 0 
-   console.log "found ' }] at #{pos4}"
-   dirty = dirty.slice(0, pos4);
-  pos5 = dirty.search /"}]/
-  console.log("Pos4:#{pos5}")
-  if pos5 > 0 
-   console.log "found ' }] at #{pos5}"
-   dirty = dirty.slice(0, pos5);
+    dirty = dirty.slice(pos1, len)
 
-  console.log "CLEAN: #{dirty}"
+  pos2 = dirty.search /,"Featured__c":false}'/
+  console.log " :false} : #{pos2}"
+  if pos2 > 0
+    dirty = dirty.slice(0, pos2+21)
+  pos3 = dirty.search /,"Featured__c":true}/
+  console.log " :true} : #{pos3}"
+  if pos3 > 0
+    dirty = dirty.slice(0, pos3+20);
+  pos4 = dirty.search /' }]/
+  console.log "' }] : #{pos4}"
+  if pos4 > 0 
+    dirty = dirty.slice(0, pos4);
+  pos5 = dirty.search /\"}]/
+  console.log " \"}] : #{pos5}"
+  if pos5 > 0 
+    dirty = dirty.slice(0, pos5);
+  # console.log "CLEAN: #{dirty}"
   return dirty
 
 app.post '/upload', (req, res, next) ->
-  console.log('..................................>> req.body:')
+  console.log('..................................>> req.body :')
   console.dir req.body
   console.log('..................................<< req.body')
-    
-  if req.body.json is undefined
-    json = req.body # dirty
-  else 
-    json = req.body.json # maybe clean
 
   try # cleaning dirt
+    json = req.body.json # maybe clean
     json = cleanbodyjson(json)
     newapp = JSON.parse(json)
-    newappstr = JSON.stringify(newapp).replace(/\\"/g, '"')
-    cleaner = cleanbodyjson(newappstr) # Yes I just did that twice!
-    newapp = JSON.parse(cleaner)    # Make sure its extra clean! ;-)
   catch error
     console.log "InVALID JSON"
     throw error
-    
-  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
-  console.dir newapp
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP')
-
-  console.log('>>> STRING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
-  console.log JSON.stringify(newapp)
-  console.log('<<< STRING <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP')
 
   filename = newapp['Id']+'.json'
   S3upload(filename, JSON.stringify(newapp))
-  console.log '\n # # # # # # # # # \n'
-  console.dir newapp
-  console.log '\n # # # # # # # # # \n'
   S3UpdateAppsJSON(newapp)
-  console.log('\n ------------------- NEXT CALL --------------------- \n')
   res.send(newapp)
 
 
@@ -198,17 +174,44 @@ app.get '/uploadraw', (req, res) ->
   res.render('uploadraw.html', { title: 'Basic Uploader Form' })
 
 app.post '/uploadraw', (req, res) ->
-  raw = $.parseJSON( req.body.json )
-  newapp = raw['json']
-  filename = newapp['Id']+'.json'
-  S3upload(filename, JSON.stringify(newapp))
-  console.log '\n # # # # # # # # # RAW START \n'
+  console.log('                                               <RAW>')
+  console.log("\n    req.body: #{typeof req.body}")
+  console.dir req.body
+  json = JSON.stringify(req.body)
+  console.log("\n    json #{typeof json}")
+  console.log json
+  json_no_quotes = json.replace(/\\"/g, '"')
+  console.log("\n    json backslash-quotes removed - parsed: #{typeof json}") 
+  console.log json_no_quotes
+  # jsonobj = JSON.parse(json)
+  # console.log("\n    json should parse: #{typeof jsonobj}") 
+  json = cleanbodyjson(json)
+  console.log("\n    json - After SECOND Clean: #{typeof json}")
+  json = json.replace(/\\"/g, '"')
+  len = json.length
+  posbackslash = json.search /\\/
+  console.log "Backslash : #{posbackslash} =? #{len}"
+  if posbackslash == len-1
+    json = json.slice(0, posbackslash)
+  console.log("\n    json - After removing backslash: #{typeof json}")
+  console.log json
+  newapp = JSON.parse(json)
+  console.log("\n    newapp - from raw: #{typeof newapp}")
   console.dir newapp
-  console.log '\n # # # # # # # # # RAW END \n'
+  filename = newapp['Id']+'.json'
+  console.log('    filename - from raw: ')
+  console.log filename
+  console.log('                                               </RAW>')
+
+
+  S3upload(filename, JSON.stringify(newapp))
+  # console.log '\n # # # # # # # # # RAW START \n'
+  # console.dir newapp
+  # console.log '\n # # # # # # # # # RAW END \n'
 
   # console.log json
   S3UpdateAppsJSON(json)
-  console.log('\n ------------------- NEXT CALL --------------------- \n')
+  # console.log('\n ------------------- NEXT CALL --------------------- \n')
   res.end()
 
 app.get '/fakeapp', (req, res) ->

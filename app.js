@@ -161,9 +161,6 @@
 
   cleanbodyjson = function(dirty) {
     var len, pos1, pos2, pos3, pos4, pos5;
-    console.log("........................         BODY IS DIRTY!! :-( ");
-    console.dir(dirty);
-    console.log("........................   ");
     console.log("     TYPE : " + (typeof dirty));
     if (typeof dirty === 'object') {
       dirty = JSON.stringify(dirty);
@@ -172,72 +169,49 @@
     len = dirty.length;
     console.log("Length: " + len);
     pos1 = dirty.search(/{"attributes":/);
-    console.log("Pos1:" + pos1);
+    console.log("{\"attributes\" : " + pos1);
     if (pos1 > 0) {
-      console.log("found {\"attributes\": at " + pos1);
       dirty = dirty.slice(pos1, len);
     }
     pos2 = dirty.search(/,"Featured__c":false}'/);
-    console.log("Pos2:" + pos2);
+    console.log(" :false} : " + pos2);
     if (pos2 > 0) {
-      console.log("found :false} at " + pos2);
       dirty = dirty.slice(0, pos2 + 21);
     }
     pos3 = dirty.search(/,"Featured__c":true}/);
-    console.log("Pos3:" + pos3);
+    console.log(" :true} : " + pos3);
     if (pos3 > 0) {
-      console.log("found :true} at " + pos3);
       dirty = dirty.slice(0, pos3 + 20);
     }
     pos4 = dirty.search(/' }]/);
-    console.log("Pos4:" + pos4);
+    console.log("' }] : " + pos4);
     if (pos4 > 0) {
-      console.log("found ' }] at " + pos4);
       dirty = dirty.slice(0, pos4);
     }
-    pos5 = dirty.search(/"}]/);
-    console.log("Pos4:" + pos5);
+    pos5 = dirty.search(/\"}]/);
+    console.log(" \"}] : " + pos5);
     if (pos5 > 0) {
-      console.log("found ' }] at " + pos5);
       dirty = dirty.slice(0, pos5);
     }
-    console.log("CLEAN: " + dirty);
     return dirty;
   };
 
   app.post('/upload', function(req, res, next) {
-    var cleaner, filename, json, newapp, newappstr;
-    console.log('..................................>> req.body:');
+    var filename, json, newapp;
+    console.log('..................................>> req.body :');
     console.dir(req.body);
     console.log('..................................<< req.body');
-    if (req.body.json === void 0) {
-      json = req.body;
-    } else {
-      json = req.body.json;
-    }
     try {
+      json = req.body.json;
       json = cleanbodyjson(json);
       newapp = JSON.parse(json);
-      newappstr = JSON.stringify(newapp).replace(/\\"/g, '"');
-      cleaner = cleanbodyjson(newappstr);
-      newapp = JSON.parse(cleaner);
     } catch (error) {
       console.log("InVALID JSON");
       throw error;
     }
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP');
-    console.dir(newapp);
-    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP');
-    console.log('>>> STRING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP');
-    console.log(JSON.stringify(newapp));
-    console.log('<<< STRING <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP');
     filename = newapp['Id'] + '.json';
     S3upload(filename, JSON.stringify(newapp));
-    console.log('\n # # # # # # # # # \n');
-    console.dir(newapp);
-    console.log('\n # # # # # # # # # \n');
     S3UpdateAppsJSON(newapp);
-    console.log('\n ------------------- NEXT CALL --------------------- \n');
     return res.send(newapp);
   });
 
@@ -248,16 +222,36 @@
   });
 
   app.post('/uploadraw', function(req, res) {
-    var filename, newapp, raw;
-    raw = $.parseJSON(req.body.json);
-    newapp = raw['json'];
-    filename = newapp['Id'] + '.json';
-    S3upload(filename, JSON.stringify(newapp));
-    console.log('\n # # # # # # # # # RAW START \n');
+    var filename, json, json_no_quotes, len, newapp, posbackslash;
+    console.log('                                               <RAW>');
+    console.log("\n    req.body: " + (typeof req.body));
+    console.dir(req.body);
+    json = JSON.stringify(req.body);
+    console.log("\n    json " + (typeof json));
+    console.log(json);
+    json_no_quotes = json.replace(/\\"/g, '"');
+    console.log("\n    json backslash-quotes removed - parsed: " + (typeof json));
+    console.log(json_no_quotes);
+    json = cleanbodyjson(json);
+    console.log("\n    json - After SECOND Clean: " + (typeof json));
+    json = json.replace(/\\"/g, '"');
+    len = json.length;
+    posbackslash = json.search(/\\/);
+    console.log("Backslash : " + posbackslash + " =? " + len);
+    if (posbackslash === len - 1) {
+      json = json.slice(0, posbackslash);
+    }
+    console.log("\n    json - After removing backslash: " + (typeof json));
+    console.log(json);
+    newapp = JSON.parse(json);
+    console.log("\n    newapp - from raw: " + (typeof newapp));
     console.dir(newapp);
-    console.log('\n # # # # # # # # # RAW END \n');
+    filename = newapp['Id'] + '.json';
+    console.log('    filename - from raw: ');
+    console.log(filename);
+    console.log('                                               </RAW>');
+    S3upload(filename, JSON.stringify(newapp));
     S3UpdateAppsJSON(json);
-    console.log('\n ------------------- NEXT CALL --------------------- \n');
     return res.end();
   });
 
