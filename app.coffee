@@ -174,7 +174,8 @@ app.post '/upload', (req, res, next) ->
   try # cleaning dirt
     json = cleanbodyjson(json)
     newapp = JSON.parse(json)
-    cleaner = cleanbodyjson(newapp) # Yes I just did that twice!
+    newappstr = JSON.stringify(newapp).replace(/\\"/g, '"')
+    cleaner = cleanbodyjson(newappstr) # Yes I just did that twice!
     newapp = JSON.parse(cleaner)    # Make sure its extra clean! ;-)
   catch error
     console.log "InVALID JSON"

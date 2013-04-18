@@ -204,7 +204,7 @@
   };
 
   app.post('/upload', function(req, res, next) {
-    var cleaner, filename, json, newapp;
+    var cleaner, filename, json, newapp, newappstr;
     console.log('..................................>> req.body:');
     console.dir(req.body);
     console.log('..................................<< req.body');
@@ -223,7 +223,8 @@
     try {
       json = cleanbodyjson(json);
       newapp = JSON.parse(json);
-      cleaner = cleanbodyjson(newapp);
+      newappstr = JSON.stringify(newapp).replace(/\\"/g, '"');
+      cleaner = cleanbodyjson(newappstr);
       newapp = JSON.parse(cleaner);
     } catch (error) {
       console.log("InVALID JSON");
