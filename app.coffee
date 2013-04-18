@@ -181,8 +181,13 @@ app.post '/upload', (req, res, next) ->
     throw error
     
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
-  console.log newapp
+  console.dir newapp
   console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP')
+
+  console.log('>>> STRING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NEW APP')
+  console.log JSON.stringify(newapp)
+  console.log('<<< STRING <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NEW APP')
+
   filename = newapp['Id']+'.json'
   S3upload(filename, JSON.stringify(newapp))
   console.log '\n # # # # # # # # # \n'
