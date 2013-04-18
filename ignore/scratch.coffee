@@ -283,4 +283,79 @@ console.log "CLEAN: #{clean}"
     json = req.body # dirty
   else 
     json = req.body.json # maybe clean
+
+
+### Trial and improvment ###
+
+
+app.get '/uploadraw', (req, res) ->
+  res.render('uploadraw.html', { title: 'Basic Uploader Form' })
+
+app.post '/uploadraw', (req, res) ->
+  console.log('                                               <RAW>')
+  console.log("\n    req.body: #{typeof req.body}")
+  console.dir req.body
+  json = JSON.stringify(req.body)
+  console.log("\n    json #{typeof json}")
+  console.log json
+  json_no_quotes = json.replace(/\\"/g, '"')
+  console.log("\n    json backslash-quotes removed - parsed: #{typeof json}") 
+  console.log json_no_quotes
+  # jsonobj = JSON.parse(json)
+  # console.log("\n    json should parse: #{typeof jsonobj}") 
+  json = cleanbodyjson(json)
+  console.log("\n    json - After SECOND Clean: #{typeof json}")
+  json = json.replace(/\\"/g, '"')
+  len = json.length
+  posbackslash = json.search /\\/
+  console.log "Backslash : #{posbackslash} =? #{len}"
+  if posbackslash == len-1
+    json = json.slice(0, posbackslash)
+  console.log("\n    json - After removing backslash: #{typeof json}")
+  console.log json
+  newapp = JSON.parse(json)
+  console.log("\n    newapp - from raw: #{typeof newapp}")
+  console.dir newapp
+  filename = newapp['Id']+'.json'
+  console.log('    filename - from raw: ')
+  console.log filename
+  console.log('                                               </RAW>')
+
+  S3upload(filename, JSON.stringify(newapp))
+  S3UpdateAppsJSON(json)
+  res.end()
+
+
+
+  <!-- CoffeeScript -->
+<script type="text/coffeescript">
+  $ ->
+    # override .bx-viewport by giving it an id
+    $('.bx-viewport').attr('id','ribbon_viewport')
+    $('.bx-viewport').css('height', '60px');
+    $('#ribbon-container').html('<p>TEST</p>')
+
+    $.ajax
+      url: 'http://mpyc.s3.amazonaws.com/apps/apps.json',
+      dataType: 'jsonp',
+      success: (data) ->
+        text = ''
+        len = data.length
+        for app in data
+          console.log app
+          entry = app['Name'];
+          text += "<p> Example: #{entry}</p>"
+        $('#ribbon-container').html(text)
+
+
+  app_create = (data) ->
+    console.log(data)
+
+ //  script = document.createElement("script");
+  // script.type = "text/javascript";
+  // script.src = 'http://mpyc.s3.amazonaws.com/apps/apps.json'+'?callback=app_create'
+
+</script>
   
+
+

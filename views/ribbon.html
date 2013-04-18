@@ -1,0 +1,101 @@
+<% extend 'layout.html' %>
+<!-- views/ribbon.html -->
+
+<link rel="stylesheet" href="http://bxslider.com/lib/jquery.bxslider.css" type="text/css" />
+<link rel="stylesheet" href="http://bxslider.com/css/styles.css" type="text/css" />
+<!-- <link rel="stylesheet" href="http://bxslider.com/css/github.css" type="text/css" /> -->
+
+
+<h2> App Ribbon </h2>
+
+<div id="ribbon-container">
+
+</div>
+
+<ul class="slider2" id="ribbon">
+  <li class="slide"><img src="http://placehold.it/350x150&text=FooBar1"></li>
+  <li class="slide"><img src="http://placehold.it/350x150&text=FooBar2"></li>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar3"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar4"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar5"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar6"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar7"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar8"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar9"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar10"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar1"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar2"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar3"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar4"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar5"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar6"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar7"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar8"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar9"></div>
+  <div class="slide"><img src="http://placehold.it/350x150&text=FooBar10"></div>
+</ul>
+
+<table id="available_apps">
+
+</table>
+
+
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.2/coffee-script.min.js"></script>
+<script src="http://bxslider.com/lib/jquery.bxslider.js"></script>
+<script src="http://bxslider.com/js/rainbow.min.js"></script>
+<script src="http://bxslider.com/js/scripts.js"></script>
+
+<script type="text/javascript">
+// $(document).ready(function(){
+		function show_ribbon() {
+		  $('.slider2').bxSlider({
+		    slideWidth: 100,
+		    minSlides: 14,
+		    maxSlides: 14,
+		    slideMargin: 2
+		  }).fadeIn("slow")
+		  $('#ribbon').css('visibility','visible');
+		 } // END show_ribbon
+// });
+</script>
+
+  <!-- CoffeeScript -->
+<script type="text/coffeescript">
+  $ ->
+		$.getJSON '/appsjson', (apps) ->
+			rows = ''
+			ribbon = ''
+			i = 1
+			# build the ribbon
+			for app in apps when app['Active__c'] == true
+				ribbon += "<li class='slide'> <img src='#{app['Application_Icon_Url__c']}' "
+				ribbon += " href='#{app['Application_URL__c']}'>"
+				ribbon += "<p class='appname'> #{app['Name']} </p> </li>"
+
+			for app in apps when app['Active__c'] == true
+				for k,v of app when i == 1
+					console.log "#{k} : #{v}"
+				rows += '<tr>'
+				rows += "<td> <img src='#{app['Application_Icon_Url__c']}'> </td>"
+				rows += "<td> #{app['Name']} </td>"
+				console.log "#{i++} | #{app['Id']} | #{app['Name']}"
+				rows += '</tr>'
+				i++
+			console.log(rows)
+
+
+			# $('#available_apps').html(rows)
+			$('#ribbon').html(ribbon)
+			$('.bx-prev').css('left', '-42px')
+			show_ribbon()
+			# override .bx-viewport by giving it an id
+			$('.bx-viewport').attr('id','ribbon_viewport')
+
+</script>
+
+ <div id="images">
+ 
+</div>
+
+<link rel="stylesheet" href="http://mpyc.s3.amazonaws.com/public/ribbon-custom.css" type="text/css" />

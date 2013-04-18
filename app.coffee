@@ -110,7 +110,7 @@ ectRenderer = ECT({ watch: true, root: __dirname + '/views' })
 app.engine('.html', ectRenderer.render)
 
 app.get '/', (req, res) ->
-  res.render('layout.html', { title: 'Hello!' })
+  res.render('ribbon.html', { title: 'App Ribbon Test' })
 
 app.get '/upload', (req, res) ->
   res.render('uploadform.html', { title: 'Basic Uploader Form' })
@@ -175,51 +175,6 @@ app.post '/upload', (req, res, next) ->
   S3UpdateAppsJSON(newapp)
   res.send(newapp)
 
-
-app.get '/uploadraw', (req, res) ->
-  res.render('uploadraw.html', { title: 'Basic Uploader Form' })
-
-app.post '/uploadraw', (req, res) ->
-  console.log('                                               <RAW>')
-  console.log("\n    req.body: #{typeof req.body}")
-  console.dir req.body
-  json = JSON.stringify(req.body)
-  console.log("\n    json #{typeof json}")
-  console.log json
-  json_no_quotes = json.replace(/\\"/g, '"')
-  console.log("\n    json backslash-quotes removed - parsed: #{typeof json}") 
-  console.log json_no_quotes
-  # jsonobj = JSON.parse(json)
-  # console.log("\n    json should parse: #{typeof jsonobj}") 
-  json = cleanbodyjson(json)
-  console.log("\n    json - After SECOND Clean: #{typeof json}")
-  json = json.replace(/\\"/g, '"')
-  len = json.length
-  posbackslash = json.search /\\/
-  console.log "Backslash : #{posbackslash} =? #{len}"
-  if posbackslash == len-1
-    json = json.slice(0, posbackslash)
-  console.log("\n    json - After removing backslash: #{typeof json}")
-  console.log json
-  newapp = JSON.parse(json)
-  console.log("\n    newapp - from raw: #{typeof newapp}")
-  console.dir newapp
-  filename = newapp['Id']+'.json'
-  console.log('    filename - from raw: ')
-  console.log filename
-  console.log('                                               </RAW>')
-
-
-  S3upload(filename, JSON.stringify(newapp))
-  # console.log '\n # # # # # # # # # RAW START \n'
-  # console.dir newapp
-  # console.log '\n # # # # # # # # # RAW END \n'
-
-  # console.log json
-  S3UpdateAppsJSON(json)
-  # console.log('\n ------------------- NEXT CALL --------------------- \n')
-  res.end()
-
 app.get '/fakeapp', (req, res) ->
   exampleapp = CreateFakeApp()
   res.send exampleapp
@@ -233,6 +188,9 @@ app.get '/s3url', (req, res) ->
 app.get '/appsjson', (req, res) ->
   $.getJSON apps_file_url, (json) ->
     res.send json
+
+
+
 
 app.listen(port)
 console.log("Express started on port #{port}")
