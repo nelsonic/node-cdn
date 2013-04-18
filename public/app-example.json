@@ -10,7 +10,7 @@
     "LastModifiedDate": "2013-04-11T14:43:15.000+0000",
     "Default__c": true,
     "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EETAA2&oid=00Db0000000I3q2EAC",
-    "Active__c": true,
+    "Active__c": false,
     "Name": "Nimil Test",
     "Featured_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EEUAA2&oid=00Db0000000I3q2EAC",
     "Application_Icon_Preview__c": "_IM1_https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EETAA2&oid=00Db0000000I3q2EAC_IM2_ _IM3__30_IM4_30_IM5_",
