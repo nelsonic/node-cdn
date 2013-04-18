@@ -123,7 +123,10 @@ cleanbodyjson = (dirty) ->
   # dirty = String(dirty)
   console.log("     TYPE : #{typeof dirty}")
   if typeof dirty is 'object'
-    dirty = JSON.stringify(dirty)
+    if dirty['json'] is not undefined
+      dirty = JSON.stringify(dirty['json'])
+    else
+      dirty = JSON.stringify(dirty)
     dirty.replace(/\\"/g, '"')
   len = dirty.length
   console.log "Length: #{len}"

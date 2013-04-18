@@ -166,7 +166,11 @@
     console.log("........................   ");
     console.log("     TYPE : " + (typeof dirty));
     if (typeof dirty === 'object') {
-      dirty = JSON.stringify(dirty);
+      if (dirty['json'] === !void 0) {
+        dirty = JSON.stringify(dirty['json']);
+      } else {
+        dirty = JSON.stringify(dirty);
+      }
       dirty.replace(/\\"/g, '"');
     }
     len = dirty.length;
