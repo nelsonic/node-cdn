@@ -13,7 +13,10 @@
     "formidable":"*",
     "ect":"*",
     "Faker":"*",
-    "jquery":"*"
+    "jquery":"*",
+    "redis":"*",
+    "async":"*"
+
 	}, 
 	"license": "MIT",
   "engines": {

@@ -2,3 +2,5 @@ key: AKIAIK6S2HJHV664GW6Q
 secret: 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
 bucket: mpyc
 server: s3.amazonaws.com
+appdir: /apps/
+apps_filename: apps.json

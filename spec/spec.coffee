@@ -6,7 +6,7 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   		console.log "Number of apps: #{window.appcount} (before re-building apps.json)"
   		i = 1
   		for app in json 
-  			console.log "#{i++} : #{app['Id']} : #{app['Name']} -- Active__c = #{app['Active__c']}"
+  			# console.log "#{i++} : #{app['Id']} : #{app['Name']} -- Active__c = #{app['Active__c']}"
   			expect(window.appcount).toBeGreaterThan(0) #  >> re-work this!
 
 
@@ -29,6 +29,26 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   		$.post '/upload', "json": window.jsonstr, (data) ->
 				# uploadedfile = 'https://mpyc.s3.amazonaws.com/apps/'+window.Id + '.json'
 				# console.log "Fetching: #{uploadedfile}"
+
+  it 'GET /s3url returns the full S3 url', ->
+    $.getJSON '/s3url', (json) ->
+      window.s3url = json['url']
+      console.log "S3 URL: #{window.s3url}"
+
+  it 'GET /email Returns the Email Address for the Logged In User', ->
+    $.getJSON '/email', (json) ->
+      console.log("Email Address: #{json['email']}")
+
+  xit 'GET /listapps returns a list of all apps', ->
+    $.getJSON '/listapps', (app_list) ->
+      i = 0
+      for url in app_list when i < 1
+        jsonp = window.s3url + url + '?callback=mycallback'
+        console.log(jsonp)
+        mycallback = (data) ->
+          console.log json
+        $.getJSON jsonp, (data) ->
+        i++
 
 	xit 'Confirm uploaded to CDN', ->
 		delay = (ms, func) -> setTimeout func, ms

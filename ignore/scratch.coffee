@@ -358,4 +358,68 @@ app.post '/uploadraw', (req, res) ->
 </script>
   
 
+### TRYING TO REBUILD THE APPS.JSON Dynamically ... ###
+
+
+rebuild_apps_json = () ->
+  # list all the json files in the S3 Bucket
+  S3client.list { prefix: 'apps' }, (err, data) ->
+    appcount  = data['Contents'].length
+    if appcount > 0
+      app_keys = []
+      apps = []
+      for app in data['Contents']
+        # console.log app['Key']
+        if app['Key'] != 'apps/apps.json'
+          app_keys.push app['Key']
+      # console.dir app_keys
+      async.forEach(app_keys, (url, callback) -> 
+        app_file_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com/' +url
+        console.log app_file_url
+        $.getJSON apps_file_url, (json) ->
+          for k,v of json
+            console.dir v['Id']
+            apps.push v
+      , (err) -> console.log('iterating done')
+
+rebuild_apps_json() # getting OUTDENT ERROR can't see why! :-()
+
+
+### WOrks but super inefficient !! :-( ####
+
+    S3GetListOfApps( (keys) ->
+    for url in keys 
+      app_file_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com/' +url
+      console.log app_file_url
+      $.getJSON app_file_url, (json) -> 
+        # console.log json
+        S3UpdateAppsJSON(json)
+    # console.log keys
+    res.send keys
+
+### /appsjson old - WORKING ###
+
+app.get '/appsjson', (req, res) ->
+  # jsonlocal = require('./apps/apps.json')  # this doesn't work on Heroku! :-(
+  # res.send jsonlocal                       # hence fetching from S3
+  # $.getJSON apps_file_url, (json) ->       # this is a fallback
+  #   res.send json                          # in case redis is down
+  redis_client.get('apps:apps.json', (err,reply) ->
+    res.send JSON.parse(reply)
+  )
+
+### no longer used ###
+
+app_url = "http://mpyc.s3.amazonaws.com/apps/a07b0000004bXrFAAU.json"
+S3ReadSingleAppJSON(app_url, (json) ->
+  console.log "ID: #{json['Id']}"
+)
+
+S3GetAppJSONStoreRedis = () ->
+  $.getJSON apps_file_url, (json) ->   # store in apps:all
+    redis_client.set('apps:apps.json', JSON.stringify(json), redis.print)
+    console.log "Updated apps:apps.json in REDIS"
+# client.set("string key", "string val", redis.print);
+
+S3GetAppJSONStoreRedis()
 
