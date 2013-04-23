@@ -423,3 +423,38 @@ S3GetAppJSONStoreRedis = () ->
 
 S3GetAppJSONStoreRedis()
 
+
+### - - - WORKING but Superseded!  - - - ###
+
+# upsert newapp in apps.json where newapp = json object of an app
+S3UpdateAppsJSON = (newapp) ->
+  # console.log(newapp['Id'])
+  existing_apps = []
+  $.getJSON apps_file_url, (apps) ->
+    console.log "There are #{apps.length} Apps"
+    if apps.length > 0
+      for app in apps
+        existing_apps.push app['Id']
+        # if the app is already in apps.json update it
+        if app['Id'] is newapp['Id']
+          app = newapp # over-write / upsert it
+          # console.log "Updating App : #{app['Id']}"
+
+    else # there are no apps!
+      S3CreateNewAppsJSONFile(newapp)
+
+    if newapp['Id'] in existing_apps
+      # console.log "#{newapp['Id']} already existed"
+      S3upload(apps_filename, JSON.stringify(apps))
+    else
+      console.log "*NEW* App: #{newapp['Id']}"
+      # console.dir existing_apps
+      apps.push newapp 
+      console.log "Number of apps with *New* App: #{apps.length}"
+      appsnew = apps
+      S3upload(apps_filename, JSON.stringify(appsnew))
+      # create new apps.json
+  .error () ->
+    console.log 'error fetching apps.json ... CREATE it!'
+    S3CreateNewAppsJSONFile(newapp)
+

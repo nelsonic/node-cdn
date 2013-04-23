@@ -60,38 +60,6 @@ S3upload = (filename, jsonstr) ->
   )
   req.end(jsonstr)
 
-# upsert newapp in apps.json where newapp = json object of an app
-S3UpdateAppsJSON = (newapp) ->
-  # console.log(newapp['Id'])
-  existing_apps = []
-  $.getJSON apps_file_url, (apps) ->
-    console.log "There are #{apps.length} Apps"
-    if apps.length > 0
-      for app in apps
-        existing_apps.push app['Id']
-        # if the app is already in apps.json update it
-        if app['Id'] is newapp['Id']
-          app = newapp # over-write / upsert it
-          # console.log "Updating App : #{app['Id']}"
-
-    else # there are no apps!
-      S3CreateNewAppsJSONFile(newapp)
-
-    if newapp['Id'] in existing_apps
-      # console.log "#{newapp['Id']} already existed"
-      S3upload(apps_filename, JSON.stringify(apps))
-    else
-      console.log "*NEW* App: #{newapp['Id']}"
-      # console.dir existing_apps
-      apps.push newapp 
-      console.log "Number of apps with *New* App: #{apps.length}"
-      appsnew = apps
-      S3upload(apps_filename, JSON.stringify(appsnew))
-      # create new apps.json
-  .error () ->
-    console.log 'error fetching apps.json ... CREATE it!'
-    S3CreateNewAppsJSONFile(newapp)
-
 S3CreateNewAppsJSONFile = (newapp) ->
   apps = []
   apps.push(newapp)
@@ -137,8 +105,9 @@ app.post '/upload', (req, res, next) ->
 
   filename = newapp['Id']+'.json'
   S3upload(filename, JSON.stringify(newapp))
-  S3UpdateAppsJSON(newapp)
-  res.send(newapp)
+  rebuild_apps_json( (all_apps) ->
+    res.send all_apps
+  )
 
 ### GEt the logged in user's email address from Session Cookie ###
 app.get '/email', (req, res) ->
@@ -241,7 +210,7 @@ S3GetListOfApps = (callback) ->
 
 ### Fetch JSON of a Single app from S3 Bucket using JQuery $.getJSON ###
 S3ReadSingleAppJSON = (app_url, callback) ->
-  console.log "S3ReadSingleAppJSON for #{app_url}"
+  # console.log "S3ReadSingleAppJSON for #{app_url}"
   $.getJSON app_url, (app) ->
     a = {} # extract only the essential fields
     a['Id'] = app['Id']
@@ -262,11 +231,14 @@ app.get '/appsjson', (req, res) ->
     res.send JSON.parse(reply)
   )
 
-### Fetch PERSONALISED List of APPS from Redis ###
+### Get PERSONALISED List of APPS from Redis ###
 app.get '/myappsjson', (req, res) ->
   get_app_list(req, (reply) ->
     res.send JSON.parse(reply)
   )  
+
+### Set PERSONALISED List of APPS to Redis ###
+
 
 ### List the apps/#{id}.json files in S3 Bucket ###
 app.get '/listapps', (req,res) ->
@@ -275,10 +247,10 @@ app.get '/listapps', (req,res) ->
     res.send keys
   )
 
-app.get '/rebuildappjson', (req,res) -> 
+rebuild_apps_json = (callback) ->
   S3GetListOfApps (keys) ->
     appcount = keys.length
-    console.log "Number of Apps to Fetch: #{appcount}"
+    # console.log "Number of Apps to Fetch: #{appcount}"
     i = 0
     all_apps = []
     for url in keys
@@ -289,8 +261,13 @@ app.get '/rebuildappjson', (req,res) ->
           all_apps.push json
         if i++ is  appcount-1
           S3upload(apps_filename, JSON.stringify(all_apps))
-          res.send all_apps
+          callback(all_apps)
       )
+
+app.get '/rebuildappjson', (req,res) -> 
+  rebuild_apps_json( (all_apps) ->
+    res.send all_apps
+  )
 
 app.get '/ribbon', (req,res) ->
   get_personalised_ribbon req, (email) ->
