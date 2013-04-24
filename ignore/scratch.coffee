@@ -458,3 +458,36 @@ S3UpdateAppsJSON = (newapp) ->
     console.log 'error fetching apps.json ... CREATE it!'
     S3CreateNewAppsJSONFile(newapp)
 
+
+### Fetch JSON of a Single app from S3 Bucket using JQuery $.getJSON - WORKING
+    Removing the $.getJSON to reduce dependency on JQuery
+###
+S3ReadSingleAppJSON = (url, callback) ->
+  app_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com/' +url
+  # console.log "S3ReadSingleAppJSON for #{app_url}"
+  $.getJSON app_url, (app) ->
+    a = {} # extract only the essential fields
+    a['Id'] = app['Id']
+    a['Name'] = app['Name']
+    a['Mandatory__c'] = app['Mandatory__c']
+    a['Default__c'] = app['Default__c']
+    a['Application_Icon_Url__c'] = app['Application_Icon_Url__c']
+    a['Application_URL__c'] = app['Application_URL__c']
+    a['Description__c'] = app['Description__c']
+    a['Active__c'] = app['Active__c']
+    # write these essential fields to Redis
+    redis_client.set('apps:'+a['Id']+'.json', JSON.stringify(a))
+    callback(a)
+
+### Superceded by REDIS ###
+
+S3CreateNewAppsJSONFile = (newapp) ->
+  apps = []
+  apps.push(newapp)
+  S3uploadjson(apps_filename, JSON.stringify(apps))
+
+# If there is No apps.json FILE on S3
+# or the file contains ZERO Apps
+# we need to create it with this "example" App:
+# exampleapp = require('./public/app-example.json')    
+# apps = S3UpdateAppsJSON(exampleapp)

@@ -1,54 +1,44 @@
 ### jslint nomen: true, plusplus: true, vars: true, indent: 2, node: true ###
 "use strict" # need this for JSLint Pass
-express = require 'express'
-$ = require 'jquery'
-ECT = require 'ect'
-fs = require 'fs'
-Faker = require 'Faker'
-async = require 'async'
-# jsdom = require 'jsdom'
 
-### REDIS ###
+### - - - - - - - - The Mini Express App - - - - - - - - ###
+express = require 'express'
+app = module.exports = express()
+app.configure () ->
+  app.use(express.bodyParser()) #used to parse form submissions
+  app.use(express.static(__dirname + '/public')) # local static files >> S3
+  # app.use(express.static(__dirname + '/spec'))   # tests public for Jasmine 
+  # app.use(express.static(__dirname + '/lib'))    # lib public for Jasmine access
+  # app.use(express.static(__dirname + '/apps'))   # apps.json local    >> S3
+  # app.use(express.cookieParser())
+
+### - - - - - - - - - Copy This to the bottom of SEF-NODEJS/app.js - - - - - - - - - ###
+
+
+### - - - - - REDIS - - - - - ###
 redis = require 'redis'
 redis_client = redis.createClient()
 redis_client.on "error", (err) ->
-  console.log("REDIS Error " + err);
+  console.log("REDIS FAIL : " + err);
 
-# S3
-require 'js-yaml'              # see: https://github.com/nodeca/js-yaml
+### - - - - - S3 Config and Knox Client - - - - - ###
+knox = require 'knox' # see: https://github.com/LearnBoost/knox
+require 'js-yaml'   # see: https://github.com/nodeca/js-yaml
 S3Config = require './config/S3.yml' 
-knox = require 'knox' 
 S3client = knox.createClient(S3Config)
 
+### - - - - - S3 Related Config - - - - - ###
 appdir = '/apps/'
 apps_filename = 'apps.json'
 apps_file_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com' +appdir+apps_filename
 console.log "apps.json is: #{apps_file_url}"
-port = process.env.PORT || 5000
-console.log " - - - - - - - - - process - - - - - - - - - "
-console.log process.argv
-console.log " - - - - - - - - - - - - - - - - - - - - - - - - "
 
 # {NodeCDN} = require('./src') # see: http://stackoverflow.com/a/10772136/1148249
 # S3 = new NodeCDN
 
 ### - - - - - MUST Move these Methods to Lib in Next sprint - - - - - ###
 
-uniqueId = (length=18) -> # generates a random Id with _TEST prefix for Fake Apps
-  id = '_TEST'
-  id += Math.random().toString(36).substr(2) while id.length < length
-  id.substr 0, length
-
-CreateFakeApp = () ->
-  exampleapp = require('./public/app-example.json')
-  exampleapp['Active__c'] = false
-  exampleapp['Id'] = uniqueId(18)
-  exampleapp['Mandatory__c'] = Math.random() < 0.5 ? true : false
-  exampleapp['Name'] = Faker.random.bs_buzz()
-  exampleapp['Description__c'] = Faker.Lorem.sentence()
-  return exampleapp
-
-S3upload = (filename, jsonstr) ->
+S3uploadjson = (filename, jsonstr) ->
   req = S3client.put(appdir+filename, 
       'Content-Length': jsonstr.length
       'Content-Type': 'application/json'
@@ -60,63 +50,20 @@ S3upload = (filename, jsonstr) ->
   )
   req.end(jsonstr)
 
-S3CreateNewAppsJSONFile = (newapp) ->
-  apps = []
-  apps.push(newapp)
-  S3upload(apps_filename, JSON.stringify(apps))
-
-# If there is No apps.json FILE on S3
-# or the file contains ZERO Apps
-# we need to create it with this "example" App:
-# exampleapp = require('./public/app-example.json')    
-# apps = S3UpdateAppsJSON(exampleapp)
-
-
-### - - - - - - - - The Mini Express App - - - - - - - - ###
-
-app = module.exports = express()
-app.configure () ->
-  app.use(express.bodyParser()) #used to parse form submissions
-  app.use(express.static(__dirname + '/public')) # local static files >> S3
-  app.use(express.static(__dirname + '/spec'))   # tests public for Jasmine 
-  app.use(express.static(__dirname + '/lib'))    # lib public for Jasmine access
-  app.use(express.static(__dirname + '/apps'))   # apps.json local    >> S3
-  # app.use(express.session({ secret: 'keyboard cat' }))
-  app.use(express.cookieParser())
-
-app.post '/upload', (req, res, next) ->
-  console.log('..................................>> req.body :')
+### Cleans the $H!T JSON We get from Salesforce ###
+cleanbodyjson = (req, callback) ->
+  console.log('..................................>> /upload req.body :')
   console.log req.body
-  console.log('..................................<< req.body')
-
+  console.log('..................................<< /upload req.body')
   try # cleaning dirt
     if req.body.json is undefined
       json = req.body # dirty
     else 
       json = req.body.json # maybe clean
-    json = cleanbodyjson(json)
-    len = json.length
-    if json.charAt len is '"'
-      json = json.slice(0,len)
-    newapp = JSON.parse(json)
   catch error
     console.log "InVALID JSON"
     throw error
-
-  filename = newapp['Id']+'.json'
-  S3upload(filename, JSON.stringify(newapp))
-  rebuild_apps_json( (all_apps) ->
-    res.send all_apps
-  )
-
-### GEt the logged in user's email address from Session Cookie ###
-app.get '/email', (req, res) ->
-  get_email(req, (email) ->
-      res.send {'email':email}
-  )
-
-### Cleans the $H!T JSON We get from Salesforce ###
-cleanbodyjson = (dirty) ->
+  dirty = json  #ReFactor This! 
   console.log("     TYPE : #{typeof dirty}")
   if typeof dirty is 'object'
     dirty = JSON.stringify(dirty)
@@ -144,8 +91,11 @@ cleanbodyjson = (dirty) ->
   if pos5 > 0 
     dirty = dirty.slice(0, pos5);
   dirty.replace(/id":"/g, 'id=')
+  len = json.length
+  if json.charAt len is '"'
+    json = json.slice(0,len) # removes trailing double-quote
   console.log "CLEAN: #{dirty}"
-  return dirty
+  callback(dirty)
 
 # Get the email address by looking up the session id in redis
 # and slice out the email address iKOW THIS IS A HACK!! Please fix!
@@ -189,10 +139,25 @@ get_app_list = (req, callback) ->
     )
   )
 
-get_personalised_ribbon = (req, callback) ->
-  get_email req, (email) ->
-    if(email.search /@/)
-      console.log email
+set_my_apps = (req, callback) ->
+  console.log('..................................>> /upload req.body :')
+  console.log req.body
+  console.log('..................................<< /upload req.body')
+
+  try # cleaning dirt
+    if req.body.json is undefined
+      json = req.body # dirty
+    else 
+      json = req.body.json # maybe clean
+    json = JSON.parse(json)
+  catch error
+    console.log "InVALID JSON"
+    throw error
+
+  get_email(req, (email) -> 
+    redis_client.set('apps:'+email+'.json', JSON.stringify(json))
+  )
+  callback(json)
 
 ### List all the json files in the S3 Bucket ###
 S3GetListOfApps = (callback) ->
@@ -209,43 +174,38 @@ S3GetListOfApps = (callback) ->
       callback(app_keys)
 
 ### Fetch JSON of a Single app from S3 Bucket using JQuery $.getJSON ###
-S3ReadSingleAppJSON = (app_url, callback) ->
+S3ReadSingleAppJSON = (url, callback) ->
+  app_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com/' +url
   # console.log "S3ReadSingleAppJSON for #{app_url}"
-  $.getJSON app_url, (app) ->
-    a = {} # extract only the essential fields
-    a['Id'] = app['Id']
-    a['Name'] = app['Name']
-    a['Mandatory__c'] = app['Mandatory__c']
-    a['Default__c'] = app['Default__c']
-    a['Application_Icon_Url__c'] = app['Application_Icon_Url__c']
-    a['Application_URL__c'] = app['Application_URL__c']
-    a['Description__c'] = app['Description__c']
-    a['Active__c'] = app['Active__c']
-    # write these essential fields to Redis
-    redis_client.set('apps:'+a['Id']+'.json', JSON.stringify(a))
-    callback(a)
+  # console.log "url:#{url}"
+  S3client.getFile('/'+url, (err,res) ->
+    res.on('data', (data) ->
+      if res.statusCode isnt 200
+        console.log "Content Type: #{res.headers['content-type']}"
+        console.log('..................................>> BAD S3 Res :')
+        console.log data.toString()
+        console.log('..................................<< BAD S3 Res')
+      else 
+        app = JSON.parse(data.toString())
+        a = {} # extract only the essential fields
+        a['Id'] = app['Id']
+        a['Name'] = app['Name']
+        a['Mandatory__c'] = app['Mandatory__c']
+        a['Default__c'] = app['Default__c']
+        a['Application_Icon_Url__c'] = app['Application_Icon_Url__c']
+        a['Application_URL__c'] = app['Application_URL__c']
+        a['Description__c'] = app['Description__c']
+        a['Active__c'] = app['Active__c']
+        # write these essential fields to Redis
+        redis_client.set('apps:'+a['Id']+'.json', JSON.stringify(a))
+        callback(a)
+    ) # END res.on
+  ) # END getFile
 
-### Fetch FULL List of APPS from Redis ###
-app.get '/appsjson', (req, res) ->
-  redis_client.get('apps:apps.json', (err,reply) ->
-    res.send JSON.parse(reply)
-  )
-
-### Get PERSONALISED List of APPS from Redis ###
-app.get '/myappsjson', (req, res) ->
-  get_app_list(req, (reply) ->
-    res.send JSON.parse(reply)
-  )  
-
-### Set PERSONALISED List of APPS to Redis ###
-
-
-### List the apps/#{id}.json files in S3 Bucket ###
-app.get '/listapps', (req,res) ->
-  S3GetListOfApps( (keys) ->
-    # console.log keys
-    res.send keys
-  )
+# url = "apps/a07b0000004bXrFAAU.json"
+# S3ReadSingleAppJSON(url, (a) ->
+#   console.log a
+# )
 
 rebuild_apps_json = (callback) ->
   S3GetListOfApps (keys) ->
@@ -254,27 +214,84 @@ rebuild_apps_json = (callback) ->
     i = 0
     all_apps = []
     for url in keys
-      app_url = 'https://'+S3Config['bucket']+'.s3.amazonaws.com/' +url
-      S3ReadSingleAppJSON(app_url, (json) ->
-        console.log "ID: #{json['Id']}"
+      S3ReadSingleAppJSON(url, (json) ->
+        # console.log "ID: #{json['Id']}"
         if json['Active__c'] == true
           all_apps.push json
         if i++ is  appcount-1
-          S3upload(apps_filename, JSON.stringify(all_apps))
+          S3uploadjson(apps_filename, JSON.stringify(all_apps))
           callback(all_apps)
       )
+
+### - - - - - - Ribbon / Apps Related Routes - - - - - - ### 
+
+### Upload a JSON String and push that as a file to S3 ###
+app.post '/upload', (req, res, next) ->
+  cleanbodyjson(req, (json) ->
+    newapp = JSON.parse(json)
+    filename = newapp['Id']+'.json'
+    S3uploadjson(filename, JSON.stringify(newapp))
+    res.send newapp
+    # After we res.send we rebuild apps.json on S3 & Redis
+    rebuild_apps_json( (all_apps) ->
+      console.log "New App Count #{all_apps.length}"
+    )
+  )
+
+### Fetch FULL List of APPS from Redis ###
+app.get '/appsjson', (req, res) ->
+  redis_client.get('apps:apps.json', (err,reply) ->
+    res.send JSON.parse(reply)
+  )
+
+### Get PERSONALISED List of APPS from Redis ###
+app.get '/getmyappsjson', (req, res) ->
+  get_app_list(req, (reply) ->
+    res.send JSON.parse(reply)
+  )  
+
+### Set PERSONALISED List of APPS to Redis ###
+app.post '/setmyappsjson', (req, res) ->
+  set_my_apps(req, (json) ->
+    res.send json
+  )  
+
+### List the apps/#{id}.json files in S3 Bucket ###
+app.get '/listapps', (req,res) ->
+  S3GetListOfApps( (keys) ->
+    # console.log keys
+    res.send keys
+  )
 
 app.get '/rebuildappjson', (req,res) -> 
   rebuild_apps_json( (all_apps) ->
     res.send all_apps
   )
 
-app.get '/ribbon', (req,res) ->
-  get_personalised_ribbon req, (email) ->
-    console.log email
-    res.send email
+### GEt the logged in user's email address from Session Cookie ###
+app.get '/email', (req, res) ->
+  get_email(req, (email) ->
+      res.send {'email':email}
+  )
 
-### - - - - - - - - TDD Specific Routes - - - - - - - - ###
+### - - - - - - - - TDD Specific Functions & Routes - - - - - - - - ###
+
+ECT = require 'ect'
+Faker = require 'Faker'
+
+uniqueId = (length=18) -> # generates a random Id with _TEST prefix for Fake Apps
+  id = '_TEST'
+  id += Math.random().toString(36).substr(2) while id.length < length
+  id.substr 0, length
+
+CreateFakeApp = () ->
+  exampleapp = require('./public/app-example.json')
+  exampleapp['Active__c'] = false
+  exampleapp['Id'] = uniqueId(18)
+  exampleapp['Mandatory__c'] = Math.random() < 0.5 ? true : false
+  exampleapp['Name'] = Faker.random.bs_buzz()
+  exampleapp['Description__c'] = Faker.Lorem.sentence()
+  return exampleapp
 
 # Define ECT as Templating Language >> http://ectjs.com/#benchmark
 ectRenderer = ECT({ watch: true, root: __dirname + '/views' })
@@ -296,5 +313,9 @@ app.get '/tdd', (req, res) ->
 app.get '/s3url', (req, res) ->
   res.send { url: 'http://'+S3Config.bucket+'.s3.amazonaws.com/' }
 
+### - - - - - - - - - Don't Copy below this point - - - - - - - - - ###
+
+
+port = process.env.PORT || 5000
 app.listen(port)
 console.log("Express started on port #{port}")

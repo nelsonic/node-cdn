@@ -5,28 +5,51 @@
 
 (function() {
   "use strict";
-  var $, CreateFakeApp, ECT, Faker, S3Config, S3CreateNewAppsJSONFile, S3GetAppJSONStoreRedis, S3GetListOfApps, S3ReadSingleAppJSON, S3UpdateAppsJSON, S3client, S3upload, app, app_url, appdir, apps, apps_file_url, apps_filename, async, cleanbodyjson, ectRenderer, exampleapp, express, fs, get_app_list, get_email, get_personalised_ribbon, knox, port, redis, redis_client, uniqueId,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  /* - - - - - - - - The Mini Express App - - - - - - - -
+  */
+
+  var CreateFakeApp, ECT, Faker, S3Config, S3GetListOfApps, S3ReadSingleAppJSON, S3client, S3uploadjson, app, appdir, apps_file_url, apps_filename, cleanbodyjson, ectRenderer, express, get_app_list, get_email, knox, port, rebuild_apps_json, redis, redis_client, set_my_apps, uniqueId;
 
   express = require('express');
 
-  $ = require('jquery');
+  app = module.exports = express();
 
-  ECT = require('ect');
+  app.configure(function() {
+    app.use(express.bodyParser());
+    return app.use(express["static"](__dirname + '/public'));
+  });
 
-  fs = require('fs');
+  /* - - - - - - - - - Copy This to the bottom of SEF-NODEJS/app.js - - - - - - - - -
+  */
 
-  Faker = require('Faker');
 
-  async = require('async');
+  /* - - - - - REDIS - - - - -
+  */
+
+
+  redis = require('redis');
+
+  redis_client = redis.createClient();
+
+  redis_client.on("error", function(err) {
+    return console.log("REDIS FAIL : " + err);
+  });
+
+  /* - - - - - S3 Config and Knox Client - - - - -
+  */
+
+
+  knox = require('knox');
 
   require('js-yaml');
 
   S3Config = require('./config/S3.yml');
 
-  knox = require('knox');
-
   S3client = knox.createClient(S3Config);
+
+  /* - - - - - S3 Related Config - - - - -
+  */
+
 
   appdir = '/apps/';
 
@@ -36,40 +59,11 @@
 
   console.log("apps.json is: " + apps_file_url);
 
-  port = process.env.PORT || 5000;
-
-  /* MUST Move these Methods to Lib in Next sprint
+  /* - - - - - MUST Move these Methods to Lib in Next sprint - - - - -
   */
 
 
-  uniqueId = function(length) {
-    var id;
-
-    if (length == null) {
-      length = 18;
-    }
-    id = '_TEST';
-    while (id.length < length) {
-      id += Math.random().toString(36).substr(2);
-    }
-    return id.substr(0, length);
-  };
-
-  CreateFakeApp = function() {
-    var exampleapp, _ref;
-
-    exampleapp = require('./public/app-example.json');
-    exampleapp['Active__c'] = false;
-    exampleapp['Id'] = uniqueId(18);
-    exampleapp['Mandatory__c'] = (_ref = Math.random() < 0.5) != null ? _ref : {
-      "true": false
-    };
-    exampleapp['Name'] = Faker.random.bs_buzz();
-    exampleapp['Description__c'] = Faker.Lorem.sentence();
-    return exampleapp;
-  };
-
-  S3upload = function(filename, jsonstr) {
+  S3uploadjson = function(filename, jsonstr) {
     var req;
 
     req = S3client.put(appdir + filename, {
@@ -85,89 +79,28 @@
     return req.end(jsonstr);
   };
 
-  S3UpdateAppsJSON = function(newapp) {
-    var existing_apps;
-
-    existing_apps = [];
-    return $.getJSON(apps_file_url, function(apps) {
-      var app, appsnew, _i, _len, _ref;
-
-      console.log("There are " + apps.length + " Apps");
-      if (apps.length > 0) {
-        for (_i = 0, _len = apps.length; _i < _len; _i++) {
-          app = apps[_i];
-          existing_apps.push(app['Id']);
-          if (app['Id'] === newapp['Id']) {
-            app = newapp;
-          }
-        }
-      } else {
-        S3CreateNewAppsJSONFile(newapp);
-      }
-      if (_ref = newapp['Id'], __indexOf.call(existing_apps, _ref) >= 0) {
-        return S3upload(apps_filename, JSON.stringify(apps));
-      } else {
-        console.log("*NEW* App: " + newapp['Id']);
-        apps.push(newapp);
-        console.log("Number of apps with *New* App: " + apps.length);
-        appsnew = apps;
-        return S3upload(apps_filename, JSON.stringify(appsnew));
-      }
-    }).error(function() {
-      console.log('error fetching apps.json ... CREATE it!');
-      return S3CreateNewAppsJSONFile(newapp);
-    });
-  };
-
-  S3CreateNewAppsJSONFile = function(newapp) {
-    var apps;
-
-    apps = [];
-    apps.push(newapp);
-    return S3upload(apps_filename, JSON.stringify(apps));
-  };
-
-  exampleapp = require('./public/app-example.json');
-
-  apps = S3UpdateAppsJSON(exampleapp);
-
-  /* The Mini Express App
+  /* Cleans the $H!T JSON We get from Salesforce
   */
 
 
-  app = module.exports = express();
+  cleanbodyjson = function(req, callback) {
+    var dirty, error, json, len, pos1, pos2, pos3, pos4, pos5;
 
-  app.configure(function() {
-    app.use(express.bodyParser());
-    app.use(express["static"](__dirname + '/public'));
-    app.use(express["static"](__dirname + '/spec'));
-    app.use(express["static"](__dirname + '/lib'));
-    app.use(express["static"](__dirname + '/apps'));
-    return app.use(express.cookieParser());
-  });
-
-  ectRenderer = ECT({
-    watch: true,
-    root: __dirname + '/views'
-  });
-
-  app.engine('.html', ectRenderer.render);
-
-  app.get('/', function(req, res) {
-    return res.render('ribbon.html', {
-      title: 'App Ribbon Test'
-    });
-  });
-
-  app.get('/upload', function(req, res) {
-    return res.render('uploadform.html', {
-      title: 'Basic Uploader Form'
-    });
-  });
-
-  cleanbodyjson = function(dirty) {
-    var len, pos1, pos2, pos3, pos4, pos5;
-
+    console.log('..................................>> /upload req.body :');
+    console.log(req.body);
+    console.log('..................................<< /upload req.body');
+    try {
+      if (req.body.json === void 0) {
+        json = req.body;
+      } else {
+        json = req.body.json;
+      }
+    } catch (_error) {
+      error = _error;
+      console.log("InVALID JSON");
+      throw error;
+    }
+    dirty = json;
     console.log("     TYPE : " + (typeof dirty));
     if (typeof dirty === 'object') {
       dirty = JSON.stringify(dirty);
@@ -201,79 +134,13 @@
       dirty = dirty.slice(0, pos5);
     }
     dirty.replace(/id":"/g, 'id=');
-    console.log("CLEAN: " + dirty);
-    return dirty;
-  };
-
-  app.post('/upload', function(req, res, next) {
-    var error, filename, json, len, newapp;
-
-    console.log('..................................>> req.body :');
-    console.log(req.body);
-    console.log('..................................<< req.body');
-    try {
-      if (req.body.json === void 0) {
-        json = req.body;
-      } else {
-        json = req.body.json;
-      }
-      json = cleanbodyjson(json);
-      len = json.length;
-      if (json.charAt(len === '"')) {
-        json = json.slice(0, len);
-      }
-      newapp = JSON.parse(json);
-    } catch (_error) {
-      error = _error;
-      console.log("InVALID JSON");
-      throw error;
+    len = json.length;
+    if (json.charAt(len === '"')) {
+      json = json.slice(0, len);
     }
-    filename = newapp['Id'] + '.json';
-    S3upload(filename, JSON.stringify(newapp));
-    S3UpdateAppsJSON(newapp);
-    return res.send(newapp);
-  });
-
-  app.get('/fakeapp', function(req, res) {
-    exampleapp = CreateFakeApp();
-    return res.send(exampleapp);
-  });
-
-  app.get('/tdd', function(req, res) {
-    return res.render('SpecRunner.html', {
-      title: 'Test Runner'
-    });
-  });
-
-  app.get('/s3url', function(req, res) {
-    return res.send({
-      url: 'http://' + S3Config.bucket + '.s3.amazonaws.com/'
-    });
-  });
-
-  app.get('/appsjson', function(req, res) {
-    return $.getJSON(apps_file_url, function(json) {
-      return res.send(json);
-    });
-  });
-
-  /* REDIS
-  */
-
-
-  redis = require('redis');
-
-  redis_client = redis.createClient();
-
-  redis_client.on("error", function(err) {
-    return console.log("REDIS Error " + err);
-  });
-
-  app.get('/email', function(req, res) {
-    return get_email(req, function(email) {
-      return res.send("{email: '" + email + "'}");
-    });
-  });
+    console.log("CLEAN: " + dirty);
+    return callback(dirty);
+  };
 
   get_email = function(req, callback) {
     var connect_session_id_cookie, cookie, cookiepos, end, redis_sess, start;
@@ -296,22 +163,53 @@
     });
   };
 
-  get_app_list = function(req, callback) {};
-
-  get_personalised_ribbon = function(req, callback) {
+  get_app_list = function(req, callback) {
     return get_email(req, function(email) {
-      if (email.search(/@/)) {
-        return console.log(email);
-      }
+      var myapps;
+
+      myapps = 'apps:' + email + '.json';
+      console.log("MYAPPS: " + myapps);
+      return redis_client.get(myapps, function(err, reply) {
+        if (err || reply === null) {
+          console.log("REDIS ERROR: " + err + " (user has not personalised ribbon)");
+          return redis_client.get('apps:apps.json', function(err, reply) {
+            console.log("Send ALL apps.json to browser");
+            return callback(reply);
+          });
+        } else {
+          return callback(reply);
+        }
+      });
     });
   };
 
-  app.get('/ribbon', function(req, res) {
-    return get_personalised_ribbon(req, function(email) {
-      console.log(email);
-      return res.send(email);
+  set_my_apps = function(req, callback) {
+    var error, json;
+
+    console.log('..................................>> /upload req.body :');
+    console.log(req.body);
+    console.log('..................................<< /upload req.body');
+    try {
+      if (req.body.json === void 0) {
+        json = req.body;
+      } else {
+        json = req.body.json;
+      }
+      json = JSON.parse(json);
+    } catch (_error) {
+      error = _error;
+      console.log("InVALID JSON");
+      throw error;
+    }
+    get_email(req, function(email) {
+      return redis_client.set('apps:' + email + '.json', JSON.stringify(json));
     });
-  });
+    return callback(json);
+  };
+
+  /* List all the json files in the S3 Bucket
+  */
+
 
   S3GetListOfApps = function(callback) {
     return S3client.list({
@@ -336,6 +234,121 @@
     });
   };
 
+  /* Fetch JSON of a Single app from S3 Bucket using JQuery $.getJSON
+  */
+
+
+  S3ReadSingleAppJSON = function(url, callback) {
+    var app_url;
+
+    app_url = 'https://' + S3Config['bucket'] + '.s3.amazonaws.com/' + url;
+    return S3client.getFile('/' + url, function(err, res) {
+      return res.on('data', function(data) {
+        var a;
+
+        if (res.statusCode !== 200) {
+          console.log("Content Type: " + res.headers['content-type']);
+          console.log('..................................>> BAD S3 Res :');
+          console.log(data.toString());
+          return console.log('..................................<< BAD S3 Res');
+        } else {
+          app = JSON.parse(data.toString());
+          a = {};
+          a['Id'] = app['Id'];
+          a['Name'] = app['Name'];
+          a['Mandatory__c'] = app['Mandatory__c'];
+          a['Default__c'] = app['Default__c'];
+          a['Application_Icon_Url__c'] = app['Application_Icon_Url__c'];
+          a['Application_URL__c'] = app['Application_URL__c'];
+          a['Description__c'] = app['Description__c'];
+          a['Active__c'] = app['Active__c'];
+          redis_client.set('apps:' + a['Id'] + '.json', JSON.stringify(a));
+          return callback(a);
+        }
+      });
+    });
+  };
+
+  rebuild_apps_json = function(callback) {
+    return S3GetListOfApps(function(keys) {
+      var all_apps, appcount, i, url, _i, _len, _results;
+
+      appcount = keys.length;
+      i = 0;
+      all_apps = [];
+      _results = [];
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        url = keys[_i];
+        _results.push(S3ReadSingleAppJSON(url, function(json) {
+          if (json['Active__c'] === true) {
+            all_apps.push(json);
+          }
+          if (i++ === appcount - 1) {
+            S3uploadjson(apps_filename, JSON.stringify(all_apps));
+            return callback(all_apps);
+          }
+        }));
+      }
+      return _results;
+    });
+  };
+
+  /* - - - - - - Ribbon / Apps Related Routes - - - - - -
+  */
+
+
+  /* Upload a JSON String and push that as a file to S3
+  */
+
+
+  app.post('/upload', function(req, res, next) {
+    return cleanbodyjson(req, function(json) {
+      var filename, newapp;
+
+      newapp = JSON.parse(json);
+      filename = newapp['Id'] + '.json';
+      S3uploadjson(filename, JSON.stringify(newapp));
+      res.send(newapp);
+      return rebuild_apps_json(function(all_apps) {
+        return console.log("New App Count " + all_apps.length);
+      });
+    });
+  });
+
+  /* Fetch FULL List of APPS from Redis
+  */
+
+
+  app.get('/appsjson', function(req, res) {
+    return redis_client.get('apps:apps.json', function(err, reply) {
+      return res.send(JSON.parse(reply));
+    });
+  });
+
+  /* Get PERSONALISED List of APPS from Redis
+  */
+
+
+  app.get('/getmyappsjson', function(req, res) {
+    return get_app_list(req, function(reply) {
+      return res.send(JSON.parse(reply));
+    });
+  });
+
+  /* Set PERSONALISED List of APPS to Redis
+  */
+
+
+  app.post('/setmyappsjson', function(req, res) {
+    return set_my_apps(req, function(json) {
+      return res.send(json);
+    });
+  });
+
+  /* List the apps/#{id}.json files in S3 Bucket
+  */
+
+
   app.get('/listapps', function(req, res) {
     return S3GetListOfApps(function(keys) {
       return res.send(keys);
@@ -343,72 +356,104 @@
   });
 
   app.get('/rebuildappjson', function(req, res) {
-    return S3GetListOfApps(function(keys) {
-      var all_apps, app_url, appcount, i, url, _i, _len, _results;
-
-      appcount = keys.length;
-      console.log("Number of Apps to Fetch: " + appcount);
-      i = 0;
-      all_apps = [];
-      _results = [];
-      for (_i = 0, _len = keys.length; _i < _len; _i++) {
-        url = keys[_i];
-        app_url = 'https://' + S3Config['bucket'] + '.s3.amazonaws.com/' + url;
-        _results.push(S3ReadSingleAppJSON(app_url, function(json) {
-          console.log("ID: " + json['Id']);
-          if (json['Active__c'] === true) {
-            all_apps.push(json);
-          }
-          if (i++ === appcount - 1) {
-            S3upload(apps_filename, JSON.stringify(all_apps));
-            return res.send(all_apps);
-          }
-        }));
-      }
-      return _results;
+    return rebuild_apps_json(function(all_apps) {
+      return res.send(all_apps);
     });
   });
 
-  S3ReadSingleAppJSON = function(app_url, callback) {
-    console.log("S3ReadSingleAppJSON for " + app_url);
-    return $.getJSON(app_url, function(app) {
-      var a;
+  /* GEt the logged in user's email address from Session Cookie
+  */
 
-      a = {};
-      a['Id'] = app['Id'];
-      a['Name'] = app['Name'];
-      a['Mandatory__c'] = app['Mandatory__c'];
-      a['Default__c'] = app['Default__c'];
-      a['Application_Icon_Url__c'] = app['Application_Icon_Url__c'];
-      a['Application_URL__c'] = app['Application_URL__c'];
-      a['Description__c'] = app['Description__c'];
-      a['Active__c'] = app['Active__c'];
-      redis_client.set('apps:' + a['Id'] + '.json', JSON.stringify(a));
-      return callback(a);
+
+  app.get('/email', function(req, res) {
+    return get_email(req, function(email) {
+      return res.send({
+        'email': email
+      });
     });
-  };
-
-  app_url = "http://mpyc.s3.amazonaws.com/apps/a07b0000004bXrFAAU.json";
-
-  S3ReadSingleAppJSON(app_url, function(json) {
-    return console.log("ID: " + json['Id']);
   });
 
-  S3GetAppJSONStoreRedis = function() {
-    return $.getJSON(apps_file_url, function(json) {
-      redis_client.set('apps:apps.json', JSON.stringify(json), redis.print);
-      return console.log("Updated apps:apps.json in REDIS");
-    });
+  /* - - - - - - - - TDD Specific Functions & Routes - - - - - - - -
+  */
+
+
+  ECT = require('ect');
+
+  Faker = require('Faker');
+
+  uniqueId = function(length) {
+    var id;
+
+    if (length == null) {
+      length = 18;
+    }
+    id = '_TEST';
+    while (id.length < length) {
+      id += Math.random().toString(36).substr(2);
+    }
+    return id.substr(0, length);
   };
 
-  S3GetAppJSONStoreRedis();
+  CreateFakeApp = function() {
+    var exampleapp, _ref;
+
+    exampleapp = require('./public/app-example.json');
+    exampleapp['Active__c'] = false;
+    exampleapp['Id'] = uniqueId(18);
+    exampleapp['Mandatory__c'] = (_ref = Math.random() < 0.5) != null ? _ref : {
+      "true": false
+    };
+    exampleapp['Name'] = Faker.random.bs_buzz();
+    exampleapp['Description__c'] = Faker.Lorem.sentence();
+    return exampleapp;
+  };
+
+  ectRenderer = ECT({
+    watch: true,
+    root: __dirname + '/views'
+  });
+
+  app.engine('.html', ectRenderer.render);
+
+  app.get('/', function(req, res) {
+    return res.render('ribbon.html', {
+      title: 'App Ribbon Test'
+    });
+  });
+
+  app.get('/upload', function(req, res) {
+    return res.render('uploadform.html', {
+      title: 'Basic Uploader Form'
+    });
+  });
+
+  app.get('/fakeapp', function(req, res) {
+    var exampleapp;
+
+    exampleapp = CreateFakeApp();
+    return res.send(exampleapp);
+  });
+
+  app.get('/tdd', function(req, res) {
+    return res.render('SpecRunner.html', {
+      title: 'Test Runner'
+    });
+  });
+
+  app.get('/s3url', function(req, res) {
+    return res.send({
+      url: 'http://' + S3Config.bucket + '.s3.amazonaws.com/'
+    });
+  });
+
+  /* - - - - - - - - - Don't Copy below this point - - - - - - - - -
+  */
+
+
+  port = process.env.PORT || 5000;
 
   app.listen(port);
 
   console.log("Express started on port " + port);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=app.map
-*/

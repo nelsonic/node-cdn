@@ -1,0 +1,347 @@
+[
+  {
+    "Id": "a07b0000004bYOFAA2",
+    "Name": "CIS Portal",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERZAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://edse-web/corporate/fsg/FSG_portal.html",
+    "Description__c": "CIS portal",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYwmAAE",
+    "Name": "Newsroom 360",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ESIAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.newsroom360.co.uk/",
+    "Description__c": "Newsroom 360 website",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYxOAAU",
+    "Name": "Birthday Database",
+    "Mandatory__c": true,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EReAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://edse-web/corporate/top_bday.html",
+    "Description__c": "Find birthdays for Celebs, Politicians and Sports stars",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYxTAAU",
+    "Name": "BT Search",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERjAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.thephonebook.bt.com/publisha.content/en/index.publisha",
+    "Description__c": "BT digital phonebook",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYxYAAU",
+    "Name": "Archiving",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERoAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://edse-web/editorial_services/archives/records_management.html",
+    "Description__c": "Archive and record office information",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYxdAAE",
+    "Name": "NI Ipad Scheme",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERtAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://sites.google.com/a/newsint.co.uk/ipadscheme/",
+    "Description__c": "Ipad Scheme site",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYxxAAE",
+    "Name": "Service Desk",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ES3AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://myniservicedesk.force.com/",
+    "Description__c": "Online self-service portal for Service Desk queries",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYxsAAE",
+    "Name": "TMS Canteen",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ERyAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.5438cpa251hgt.co.uk/",
+    "Description__c": "The TMS Level 6 Canteen site",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYyCAAU",
+    "Name": "Shuttle Bus",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ESNAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://docs.google.com/a/newsint.co.uk/file/d/0BxuoRMKqK1RCdlNURkNFWHRsSXM/edit",
+    "Description__c": "The TMS shuttle bus timetable",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYy2AAE",
+    "Name": "NI Vacancies",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ES8AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://pingsrv/hr/vacancies/",
+    "Description__c": "Internal job vacancies",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYy7AAE",
+    "Name": "NISA",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ESDAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://pingsrv/nisa/latestnews.php",
+    "Description__c": "News International Staff Association Site",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYyHAAU",
+    "Name": "ST Intranet",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ESSAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://stintranet/",
+    "Description__c": "The Sunday Times intranet access",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYyWAAU",
+    "Name": "Community",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EShAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://communityinvestment.se.newsint.co.uk/",
+    "Description__c": "Community investment",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYyMAAU",
+    "Name": "The Sun Intranet",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ESXAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://sunintranet/",
+    "Description__c": "The Sun Intranet Access",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYylAAE",
+    "Name": "Old Intranet",
+    "Mandatory__c": true,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ET1AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://edse-web/",
+    "Description__c": "Link to the old 2012 intranet",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYyRAAU",
+    "Name": "TT Intranet",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EScAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://timesintranet/intranet_2002/default_2002.htm",
+    "Description__c": "The Times intranet access",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bYz0AAE",
+    "Name": "Policies and Procedures",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001ET6AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://sites.google.com/a/newsint.co.uk/hr/policies-and-procedures?pli=1",
+    "Description__c": "All our policies and procedures",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bcAHAAY",
+    "Name": "Gmail",
+    "Mandatory__c": true,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001F5EAAU&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://gmail.com/",
+    "Description__c": "Your email",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bcAMAAY",
+    "Name": "Newspeople",
+    "Mandatory__c": true,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001F5OAAU&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://vpopci.ds.newsint/irj/portal",
+    "Description__c": "Newspeople portal. Includes the Casuals Management System (AMS), Editorial Contributions System (ECS), Common Approval System (CAS), SAP Portal and more. read less",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004biAlAAI",
+    "Name": "National Rail",
+    "Mandatory__c": false,
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GNiAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.thetrainline.co.uk",
+    "Description__c": "National Rail TImetable",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bnTNAAY",
+    "Name": "TMS Info",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKPAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://edse-web/tms_info/faq.htm",
+    "Description__c": "Welcome packs for TMS1, 2 and 5",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bnXfAAI",
+    "Name": "PCC Code",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GL8AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.pcc.org.uk/cop/practice.html",
+    "Description__c": "Journalist guide and Editors' code of practice",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneKAAQ",
+    "Name": "UK Phone Codes",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKZAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.ukphoneinfo.com/locator.php",
+    "Description__c": "The UK Telephone Code Locator takes telephone numbers, std codes, access/short codes, exchange names or the name of a location.",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bne5AAA",
+    "Name": "Systems Learning",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKFAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://trainingweb/systemslearning/index.html",
+    "Description__c": "Official NI letterheads department by department",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneLAAQ",
+    "Name": "Thesaurus",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKaAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://thesaurus.com/",
+    "Description__c": "Online thesaurus",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneAAAQ",
+    "Name": "Staffbuy",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GJsAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://staffbuy.newsint.co.uk/",
+    "Description__c": "The staff buy scheme enables NI staff, casuals and contractors to purchase IT products that have been decomissioned by NI Group and refurbished for re-sale. read less",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bnePAAQ",
+    "Name": "uBook",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GJ3AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://ron.m4.net/ubook/ub7588",
+    "Description__c": "Sameday Courier booking system",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneUAAQ",
+    "Name": "Yellow Pages",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKeAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://www.yell.com/",
+    "Description__c": "yell.com yellow pages",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneZAAQ",
+    "Name": "Useful Numbers",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKjAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "http://info-dev/News%20International%20News/Helplines.htm",
+    "Description__c": "Contact numbers for Bupa, Security etc",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneeAAA",
+    "Name": "Tech PMO",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKtAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://sites.google.com/a/newsint.co.uk/technology-pmo-portal",
+    "Description__c": "The Portfolio Management Office will provide a central service to manage governance processes and assure the planning, scheduling, risk assessments, and delivery of projects",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bneoAAA",
+    "Name": "Pensions (Old)",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GK2AAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://www.mynipp.co.uk/",
+    "Description__c": "NI Pensions Plan old website (for service pre 31/12/2012)",
+    "Active__c": true
+  },
+  {
+    "Id": "a07b0000004bnejAAA",
+    "Name": "Pensions (New)",
+    "Mandatory__c": false,
+    "Default__c": false,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001GKyAAM&amp;oid=00Db0000000I3q2EAC",
+    "Application_URL__c": "https://login.benpal.com/",
+    "Description__c": "NI Pensions Plan new website (for service post 01/01/2013)",
+    "Active__c": true
+  },
+  {
+    "attributes": {
+      "type": "Application__c",
+      "url": "/services/data/v27.0/sobjects/Application__c/a07b0000004bXrFAAU"
+    },
+    "Mandatory__c": false,
+    "LastModifiedById": "005b0000000MGa7AAG",
+    "Featured_End_Date__c": "2013-04-26T16:16:00.000+0000",
+    "OwnerId": "005b0000000MGa7AAG",
+    "LastModifiedDate": "2013-04-11T14:43:15.000+0000",
+    "Default__c": true,
+    "Application_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EETAA2&amp;oid=00Db0000000I3q2EAC",
+    "Active__c": false,
+    "Name": "Nimil Test",
+    "Featured_Icon_Url__c": "https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EEUAA2&amp;oid=00Db0000000I3q2EAC",
+    "Application_Icon_Preview__c": "_IM1_https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EETAA2&amp;oid=00Db0000000I3q2EAC_IM2_ _IM3__30_IM4_30_IM5_",
+    "Featured_Start_Date__c": "2013-04-10T16:16:00.000+0000",
+    "SystemModstamp": "2013-04-11T14:43:15.000+0000",
+    "CreatedById": "005b0000000MGa7AAG",
+    "CreatedDate": "2013-04-10T16:17:16.000+0000",
+    "Featured_Banner_Preview__c": "_IM1_https://c.eu2.content.force.com/servlet/servlet.ImageServer?id=015b00000001EEUAA2&amp;oid=00Db0000000I3q2EAC_IM2_ _IM3__30_IM4_30_IM5_",
+    "IsDeleted": false,
+    "Id": "a07b0000004bXrFRAU",
+    "Featured__c": false
+  }
+]
