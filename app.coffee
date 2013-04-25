@@ -52,17 +52,6 @@ S3uploadjson = (filename, jsonstr) ->
 
 ### Cleans the $H!T JSON We get from Salesforce ###
 cleanbodyjson = (req, callback) ->
-  console.log('..................................>> /upload req.body :')
-  console.log req.body
-  console.log('..................................<< /upload req.body')
-  try # cleaning dirt
-    if req.body.json is undefined
-      json = req.body # dirty
-    else 
-      json = req.body.json # maybe clean
-  catch error
-    console.log "InVALID JSON"
-    throw error
   dirty = json  #ReFactor This! 
   console.log("     TYPE : #{typeof dirty}")
   if typeof dirty is 'object'
@@ -97,46 +86,21 @@ cleanbodyjson = (req, callback) ->
   console.log "CLEAN: #{dirty}"
   callback(dirty)
 
-# Get the email address by looking up the session id in redis
-# and slice out the email address iKOW THIS IS A HACK!! Please fix!
-get_email = (req, callback) ->
-  console.dir req.headers.cookie
-  connect_session_id_cookie = 'connect.sid='
-  cookiepos = req.headers.cookie.search /connect_session_id_cookie/
-  # console.log cookiepos
-  start = cookiepos + connect_session_id_cookie.length+1
-  end   = req.headers.cookie.search /;/
-  cookie = req.headers.cookie.slice(start, end);
-  # console.dir cookie
-  redis_sess = 'sess:'+cookie.replace(/\'/g,'')
-  redis_sess = redis_sess.replace(/%2F/g,'/')
-  redis_sess = redis_sess.slice(0,74)
-  # console.log redis_sess
-  redis_client.get(redis_sess, (err,reply) ->
-    # console.log("REDIS REPLY:")
-    # console.dir reply
-    json = JSON.parse(reply)
-    email = json.passport.user.profiles.google[0]['emails'][0]['value']
-    # console.dir json.passport.user.profiles.google[0]['emails'][0]['value']
-    callback(email)
-  )
-
 get_app_list = (req, callback) ->
   # first check if this *user* has customiszed her ribbon
-  get_email(req, (email) ->
-    myapps = 'apps:'+email+'.json'
-    console.log "MYAPPS: #{myapps}"
-    redis_client.get(myapps, (err,reply) ->
-      if err or reply is null
-        console.log "REDIS ERROR: #{err} (user has not personalised ribbon)"
-        # if user has no custom ribbon, return full list of apps
-        redis_client.get('apps:apps.json', (err,reply) ->
-          console.log "Send ALL apps.json to browser"
-          callback(reply) 
-        )
-      else
-        callback(reply)
-    )
+  email = req.user.profiles.google[0]['emails'][0]['value']
+  myapps = 'apps:'+email+'.json'
+  console.log "MYAPPS: #{myapps}"
+  redis_client.get(myapps, (err,reply) ->
+    if err or reply is null
+      console.log "REDIS ERROR: #{err} (user has not personalised ribbon)"
+      # if user has no custom ribbon, return full list of apps
+      redis_client.get('apps:apps.json', (err,reply) ->
+        console.log "Send ALL apps.json to browser"
+        callback(reply) 
+      )
+    else
+      callback(reply)
   )
 
 set_my_apps = (req, callback) ->
@@ -154,9 +118,8 @@ set_my_apps = (req, callback) ->
     console.log "InVALID JSON"
     throw error
 
-  get_email(req, (email) -> 
-    redis_client.set('apps:'+email+'.json', JSON.stringify(json))
-  )
+  email = req.user.profiles.google[0]['emails'][0]['value']
+  redis_client.set('apps:'+email+'.json', JSON.stringify(json))
   callback(json)
 
 ### List all the json files in the S3 Bucket ###
@@ -219,6 +182,7 @@ rebuild_apps_json = (callback) ->
         if json['Active__c'] == true
           all_apps.push json
         if i++ is  appcount-1
+          redis_client.set('apps:apps.json', JSON.stringify(all_apps))
           S3uploadjson(apps_filename, JSON.stringify(all_apps))
           callback(all_apps)
       )
@@ -227,16 +191,39 @@ rebuild_apps_json = (callback) ->
 
 ### Upload a JSON String and push that as a file to S3 ###
 app.post '/upload', (req, res, next) ->
-  cleanbodyjson(req, (json) ->
-    newapp = JSON.parse(json)
-    filename = newapp['Id']+'.json'
-    S3uploadjson(filename, JSON.stringify(newapp))
-    res.send newapp
+  # console.log('..................................>> /upload req.body :')
+  # console.log req.body.json
+  # console.log('..................................<< /upload req.body')
+  try # cleaning dirt
+    if req.body.json is undefined
+      console.log "req.body.json is #{req.body.json} :-("
+      json = req.body # dirty
+    else 
+      json = req.body.json # maybe clean
+    if typeof json is "string" 
+      json = JSON.parse(json)
+    # console.log("..................................>> /upload json : #{typeof json}")
+    # console.log json
+    # console.log('..................................<< ')
+  catch error
+    console.log "InVALID JSON (BODY) json typeof : #{typeof json}"
+    throw error
+  appcount = json.length
+  console.log "/UPLOAD is processing #{appcount} apps - json type : #{typeof json}"
+
+  i = 1
+  for app in json
+    filename = app['Id']+'.json'
+    S3uploadjson(filename, JSON.stringify(app))
+    console.log "i:#{i} - appcount:#{appcount}"
+    if i is appcount
+      res.send json
     # After we res.send we rebuild apps.json on S3 & Redis
-    rebuild_apps_json( (all_apps) ->
-      console.log "New App Count #{all_apps.length}"
-    )
-  )
+      rebuild_apps_json( (all_apps) ->
+        console.log "New App Count #{all_apps.length}"
+        console.log("\n - - - finished uploading - - - \n\n")
+      )
+    i++
 
 ### Fetch FULL List of APPS from Redis ###
 app.get '/appsjson', (req, res) ->
@@ -270,9 +257,19 @@ app.get '/rebuildappjson', (req,res) ->
 
 ### GEt the logged in user's email address from Session Cookie ###
 app.get '/email', (req, res) ->
-  get_email(req, (email) ->
-      res.send {'email':email}
-  )
+  # console.log " - - - - - - - - - req.user - - - - - - - - "
+  # console.log req.user
+  if req.user is undefined
+    req.user = {}  # simulate logged in user
+    req.user['profiles'] = {}
+    req.user.profiles['google'] = [{"displayName":"Florian Höhn","emails":[{"value":"florian.hoehn@test.newsint.co.uk"}],"name":{"familyName":"Höhn","givenName":"Florian"},"identifier":"https://www.google.com/accounts/o8/id?id=AItOawljE9AYuKXDVqwjDOTLjZ88YiM44adgZNc"}]
+  # console.log " - - - - - - - - - - - - - - - - - - - - - - "
+  email = req.user.profiles.google[0]['emails'][0]['value']
+  res.send {'email':email}
+
+### - - - - - - - - - Don't Copy below this point - - - - - - - - - ###
+
+
 
 ### - - - - - - - - TDD Specific Functions & Routes - - - - - - - - ###
 
@@ -296,6 +293,7 @@ CreateFakeApp = () ->
 # Define ECT as Templating Language >> http://ectjs.com/#benchmark
 ectRenderer = ECT({ watch: true, root: __dirname + '/views' })
 app.engine('.html', ectRenderer.render)
+# app.set('view engine', 'ect');
 
 app.get '/', (req, res) ->
   res.render('ribbon.html', { title: 'App Ribbon Test' })
@@ -305,7 +303,9 @@ app.get '/upload', (req, res) ->
 
 app.get '/fakeapp', (req, res) ->
   exampleapp = CreateFakeApp()
-  res.send exampleapp
+  exampleappOBJECT = []
+  exampleappOBJECT[0] = exampleapp
+  res.send exampleappOBJECT
 
 app.get '/tdd', (req, res) ->
   res.render('SpecRunner.html', { title: 'Test Runner' })
@@ -313,7 +313,7 @@ app.get '/tdd', (req, res) ->
 app.get '/s3url', (req, res) ->
   res.send { url: 'http://'+S3Config.bucket+'.s3.amazonaws.com/' }
 
-### - - - - - - - - - Don't Copy below this point - - - - - - - - - ###
+
 
 
 port = process.env.PORT || 5000

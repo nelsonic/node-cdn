@@ -491,3 +491,67 @@ S3CreateNewAppsJSONFile = (newapp) ->
 # we need to create it with this "example" App:
 # exampleapp = require('./public/app-example.json')    
 # apps = S3UpdateAppsJSON(exampleapp)
+
+
+### working ###
+    $.getJSON '/getmyappsjson', (myapps) ->
+      console.log "myapps: #{myapps.length}"
+
+### WORKING - Before Re-Write to acoomodate Multiple Apps ###
+
+### Cleans the $H!T JSON We get from Salesforce ###
+cleanbodyjson = (req, callback) ->
+  console.log('..................................>> /upload req.body :')
+  console.log req.body
+  console.log('..................................<< /upload req.body')
+  try # cleaning dirt
+    if req.body.json is undefined
+      json = req.body # dirty
+    else 
+      json = req.body.json # maybe clean
+  catch error
+    console.log "InVALID JSON"
+    throw error
+  dirty = json  #ReFactor This! 
+  console.log("     TYPE : #{typeof dirty}")
+  if typeof dirty is 'object'
+    dirty = JSON.stringify(dirty)
+    dirty = dirty.replace(/\\"/g, '"')
+  len = dirty.length
+  console.log "Length: #{len}"
+  pos1 = dirty.search /{"attributes":/
+  console.log "{\"attributes\" : #{pos1}"
+  if pos1 > 0
+    dirty = dirty.slice(pos1, len)
+  pos2 = dirty.search /"Featured__c":false}/
+  console.log " :false} : #{pos2}"
+  if pos2 > 0
+    dirty = dirty.slice(0, pos2+20)
+  pos3 = dirty.search /"Featured__c":true/
+  console.log " :true} : #{pos3}"
+  if pos3 > 0
+    dirty = dirty.slice(0, pos3+19);
+  pos4 = dirty.search /' }]/
+  console.log "' }] : #{pos4}"
+  if pos4 > 0 
+    dirty = dirty.slice(0, pos4);
+  pos5 = dirty.search /\"}]/
+  console.log " \"}] : #{pos5}"
+  if pos5 > 0 
+    dirty = dirty.slice(0, pos5);
+  dirty.replace(/id":"/g, 'id=')
+  len = json.length
+  if json.charAt len is '"'
+    json = json.slice(0,len) # removes trailing double-quote
+  console.log "CLEAN: #{dirty}"
+  callback(dirty)
+
+
+str = '''
+    [
+      {'Name': 'Jane',
+           'Id': '005b0000000MGa7AAG'},
+      {'Name': 'Tom',
+           'Id': '005b0000000MGa7AAF'}
+    ]
+'''

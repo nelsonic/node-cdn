@@ -14,10 +14,11 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
 		# this creates an apps.json file if one doesn't exist
 		# $.get '/buildappsjson', (data) ->
 
-    $.getJSON 'fakeapp', (json) ->
-    	console.log("Id #{json['Id']} length #{json['Id'].length} == 18")
-    	expect(json["Active__c"]).toEqual(false)
-    	expect(json["Id"].length).toEqual(18)
+    $.getJSON 'fakeapp', (obj) ->
+      for json in obj
+      	console.log("Id #{json['Id']} length #{json['Id'].length} == 18")
+      	expect(json["Active__c"]).toEqual(false)
+      	expect(json["Id"].length).toEqual(18)
 
     	# feel free to write other expectations here just keeping it simple
 
@@ -26,9 +27,26 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   	$.getJSON '/fakeapp', (json) ->
   		window.Id = json['Id']
   		window.jsonstr = JSON.stringify(json)
+      # console.log 'FUCK!!'
   		$.post '/upload', "json": window.jsonstr, (data) ->
 				# uploadedfile = 'https://mpyc.s3.amazonaws.com/apps/'+window.Id + '.json'
 				# console.log "Fetching: #{uploadedfile}"
+
+  it 'GET /several-apps.json expects a JSON String/OBJECT with 3 Apps', ->
+    $.getJSON '/several-apps.json', (json) -> 
+      console.log "Expect Number of apps: #{json.length} == 3"
+      expect(json.length).toEqual(3)
+
+
+  it 'POST /upload (MULTIPLE) should upload a JSON String with 3 Apps', ->
+  # When submitting a POST Request  to /upload with JSon
+    $.getJSON '/several-apps.json', (json) -> 
+      for app in json
+        console.log "App ID: #{app['Id']}"
+      multiapp = json
+      $.post '/upload', "json": multiapp, (data) ->
+        # uploadedfile = 'https://mpyc.s3.amazonaws.com/apps/'+window.Id + '.json'
+        # console.log "Fetching: #{uploadedfile}"
 
   it 'GET /s3url returns the full S3 url', ->
     $.getJSON '/s3url', (json) ->

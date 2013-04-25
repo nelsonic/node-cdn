@@ -8,7 +8,7 @@
   /* - - - - - - - - The Mini Express App - - - - - - - -
   */
 
-  var CreateFakeApp, ECT, Faker, S3Config, S3GetListOfApps, S3ReadSingleAppJSON, S3client, S3uploadjson, app, appdir, apps_file_url, apps_filename, cleanbodyjson, ectRenderer, express, get_app_list, get_email, knox, port, rebuild_apps_json, redis, redis_client, set_my_apps, uniqueId;
+  var CreateFakeApp, ECT, Faker, S3Config, S3GetListOfApps, S3ReadSingleAppJSON, S3client, S3uploadjson, app, appdir, apps_file_url, apps_filename, cleanbodyjson, ectRenderer, express, get_app_list, knox, port, rebuild_apps_json, redis, redis_client, set_my_apps, uniqueId;
 
   express = require('express');
 
@@ -142,49 +142,27 @@
     return callback(dirty);
   };
 
-  get_email = function(req, callback) {
-    var connect_session_id_cookie, cookie, cookiepos, end, redis_sess, start;
-
-    console.dir(req.headers.cookie);
-    connect_session_id_cookie = 'connect.sid=';
-    cookiepos = req.headers.cookie.search(/connect_session_id_cookie/);
-    start = cookiepos + connect_session_id_cookie.length + 1;
-    end = req.headers.cookie.search(/;/);
-    cookie = req.headers.cookie.slice(start, end);
-    redis_sess = 'sess:' + cookie.replace(/\'/g, '');
-    redis_sess = redis_sess.replace(/%2F/g, '/');
-    redis_sess = redis_sess.slice(0, 74);
-    return redis_client.get(redis_sess, function(err, reply) {
-      var email, json;
-
-      json = JSON.parse(reply);
-      email = json.passport.user.profiles.google[0]['emails'][0]['value'];
-      return callback(email);
-    });
-  };
-
   get_app_list = function(req, callback) {
-    return get_email(req, function(email) {
-      var myapps;
+    var email, myapps;
 
-      myapps = 'apps:' + email + '.json';
-      console.log("MYAPPS: " + myapps);
-      return redis_client.get(myapps, function(err, reply) {
-        if (err || reply === null) {
-          console.log("REDIS ERROR: " + err + " (user has not personalised ribbon)");
-          return redis_client.get('apps:apps.json', function(err, reply) {
-            console.log("Send ALL apps.json to browser");
-            return callback(reply);
-          });
-        } else {
+    email = req.user.profiles.google[0]['emails'][0]['value'];
+    myapps = 'apps:' + email + '.json';
+    console.log("MYAPPS: " + myapps);
+    return redis_client.get(myapps, function(err, reply) {
+      if (err || reply === null) {
+        console.log("REDIS ERROR: " + err + " (user has not personalised ribbon)");
+        return redis_client.get('apps:apps.json', function(err, reply) {
+          console.log("Send ALL apps.json to browser");
           return callback(reply);
-        }
-      });
+        });
+      } else {
+        return callback(reply);
+      }
     });
   };
 
   set_my_apps = function(req, callback) {
-    var error, json;
+    var email, error, json;
 
     console.log('..................................>> /upload req.body :');
     console.log(req.body);
@@ -201,9 +179,8 @@
       console.log("InVALID JSON");
       throw error;
     }
-    get_email(req, function(email) {
-      return redis_client.set('apps:' + email + '.json', JSON.stringify(json));
-    });
+    email = req.user.profiles.google[0]['emails'][0]['value'];
+    redis_client.set('apps:' + email + '.json', JSON.stringify(json));
     return callback(json);
   };
 
@@ -284,6 +261,7 @@
             all_apps.push(json);
           }
           if (i++ === appcount - 1) {
+            redis_client.set('apps:apps.json', JSON.stringify(all_apps));
             S3uploadjson(apps_filename, JSON.stringify(all_apps));
             return callback(all_apps);
           }
@@ -366,12 +344,39 @@
 
 
   app.get('/email', function(req, res) {
-    return get_email(req, function(email) {
-      return res.send({
-        'email': email
-      });
+    var email;
+
+    console.log(" - - - - - - - - - req.user - - - - - - - - ");
+    console.log(req.user);
+    if (req.user === void 0) {
+      req.user = {};
+      req.user['profiles'] = {};
+      req.user.profiles['google'] = [
+        {
+          "displayName": "Florian Höhn",
+          "emails": [
+            {
+              "value": "florian.hoehn@test.newsint.co.uk"
+            }
+          ],
+          "name": {
+            "familyName": "Höhn",
+            "givenName": "Florian"
+          },
+          "identifier": "https://www.google.com/accounts/o8/id?id=AItOawljE9AYuKXDVqwjDOTLjZ88YiM44adgZNc"
+        }
+      ];
+    }
+    console.log(" - - - - - - - - - - - - - - - - - - - - - - ");
+    email = req.user.profiles.google[0]['emails'][0]['value'];
+    return res.send({
+      'email': email
     });
   });
+
+  /* - - - - - - - - - Don't Copy below this point - - - - - - - - -
+  */
+
 
   /* - - - - - - - - TDD Specific Functions & Routes - - - - - - - -
   */
@@ -446,10 +451,6 @@
     });
   });
 
-  /* - - - - - - - - - Don't Copy below this point - - - - - - - - -
-  */
-
-
   port = process.env.PORT || 5000;
 
   app.listen(port);
@@ -457,3 +458,7 @@
   console.log("Express started on port " + port);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=app.map
+*/
