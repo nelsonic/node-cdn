@@ -27,7 +27,6 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   	$.getJSON '/fakeapp', (json) ->
   		window.Id = json['Id']
   		window.jsonstr = JSON.stringify(json)
-      # console.log 'FUCK!!'
   		$.post '/upload', "json": window.jsonstr, (data) ->
 				# uploadedfile = 'https://mpyc.s3.amazonaws.com/apps/'+window.Id + '.json'
 				# console.log "Fetching: #{uploadedfile}"
@@ -56,6 +55,17 @@ describe 'iNI Phase 2 - App Ribbon (NodeJS) Tests', ->
   it 'GET /email Returns the Email Address for the Logged In User', ->
     $.getJSON '/email', (json) ->
       console.log("Email Address: #{json['email']}")
+
+  it 'POST /setmyappsjson updates redis with string of apps', ->
+    myjson = {"apps":"1,2,3"}
+    window.myjson = myjson
+    console.log "MYJSON : #{myjson} [BEFORE]"
+    $.post '/setmyappsjson', "json": JSON.stringify(myjson), (data) ->
+      console.log(data)
+
+  it 'GET /getmyappsjson updates redis with string of apps', ->
+    $.getJSON '/getmyappsjson', (json) ->
+      console.log(json)
 
   xit 'GET /listapps returns a list of all apps', ->
     $.getJSON '/listapps', (app_list) ->

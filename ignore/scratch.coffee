@@ -555,3 +555,10 @@ str = '''
            'Id': '005b0000000MGa7AAF'}
     ]
 '''
+
+    i = 0
+    for app in window.apps
+      for k,v of app when i == 0
+        console.log "#{k} : #{v}" # just so we have a list of the available fields
+      i++
+    console.dir window.apps[4]

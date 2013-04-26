@@ -8,7 +8,7 @@
   /* - - - - - - - - The Mini Express App - - - - - - - -
   */
 
-  var CreateFakeApp, ECT, Faker, S3Config, S3GetListOfApps, S3ReadSingleAppJSON, S3client, S3uploadjson, app, appdir, apps_file_url, apps_filename, cleanbodyjson, ectRenderer, express, get_app_list, knox, port, rebuild_apps_json, redis, redis_client, set_my_apps, uniqueId;
+  var CreateFakeApp, ECT, Faker, S3Config, S3GetListOfApps, S3ReadSingleAppJSON, S3client, S3uploadjson, app, appdir, apps_file_url, apps_filename, cleanbodyjson, ectRenderer, express, get_app_list, knox, port, rebuild_apps_json, redis, redisClient, set_my_apps, uniqueId;
 
   express = require('express');
 
@@ -29,11 +29,13 @@
 
   redis = require('redis');
 
-  redis_client = redis.createClient();
-
-  redis_client.on("error", function(err) {
-    return console.log("REDIS FAIL : " + err);
-  });
+  if (!redisClient) {
+    console.log("...................................Need to CONNECT to REDIS ...");
+    redisClient = redis.createClient();
+    redisClient.on("error", function(err) {
+      return console.log("REDIS FAIL : " + err);
+    });
+  }
 
   /* - - - - - S3 Config and Knox Client - - - - -
   */
@@ -84,22 +86,8 @@
 
 
   cleanbodyjson = function(req, callback) {
-    var dirty, error, json, len, pos1, pos2, pos3, pos4, pos5;
+    var dirty, json, len, pos1, pos2, pos3, pos4, pos5;
 
-    console.log('..................................>> /upload req.body :');
-    console.log(req.body);
-    console.log('..................................<< /upload req.body');
-    try {
-      if (req.body.json === void 0) {
-        json = req.body;
-      } else {
-        json = req.body.json;
-      }
-    } catch (_error) {
-      error = _error;
-      console.log("InVALID JSON");
-      throw error;
-    }
     dirty = json;
     console.log("     TYPE : " + (typeof dirty));
     if (typeof dirty === 'object') {
@@ -145,14 +133,33 @@
   get_app_list = function(req, callback) {
     var email, myapps;
 
+    if (req.user === void 0) {
+      req.user = {};
+      req.user['profiles'] = {};
+      req.user.profiles['google'] = [
+        {
+          "displayName": "Florian Höhn",
+          "emails": [
+            {
+              "value": "florian.hoehn@test.newsint.co.uk"
+            }
+          ],
+          "name": {
+            "familyName": "Höhn",
+            "givenName": "Florian"
+          },
+          "identifier": "https://www.google.com/accounts/o8/id?id=AItOawljE9AYuKXDVqwjDOTLjZ88YiM44adgZNc"
+        }
+      ];
+    }
     email = req.user.profiles.google[0]['emails'][0]['value'];
     myapps = 'apps:' + email + '.json';
     console.log("MYAPPS: " + myapps);
-    return redis_client.get(myapps, function(err, reply) {
+    return redisClient.get(myapps, function(err, reply) {
       if (err || reply === null) {
         console.log("REDIS ERROR: " + err + " (user has not personalised ribbon)");
-        return redis_client.get('apps:apps.json', function(err, reply) {
-          console.log("Send ALL apps.json to browser");
+        return redisClient.get('apps:mandatory-default.json', function(err, reply) {
+          console.log("Send the Mandatory & Default apps to browser");
           return callback(reply);
         });
       } else {
@@ -167,6 +174,25 @@
     console.log('..................................>> /upload req.body :');
     console.log(req.body);
     console.log('..................................<< /upload req.body');
+    if (req.user === void 0) {
+      req.user = {};
+      req.user['profiles'] = {};
+      req.user.profiles['google'] = [
+        {
+          "displayName": "Florian Höhn",
+          "emails": [
+            {
+              "value": "florian.hoehn@test.newsint.co.uk"
+            }
+          ],
+          "name": {
+            "familyName": "Höhn",
+            "givenName": "Florian"
+          },
+          "identifier": "https://www.google.com/accounts/o8/id?id=AItOawljE9AYuKXDVqwjDOTLjZ88YiM44adgZNc"
+        }
+      ];
+    }
     try {
       if (req.body.json === void 0) {
         json = req.body;
@@ -180,7 +206,7 @@
       throw error;
     }
     email = req.user.profiles.google[0]['emails'][0]['value'];
-    redis_client.set('apps:' + email + '.json', JSON.stringify(json));
+    redisClient.set('apps:' + email + '.json', JSON.stringify(json));
     return callback(json);
   };
 
@@ -235,11 +261,11 @@
           a['Name'] = app['Name'];
           a['Mandatory__c'] = app['Mandatory__c'];
           a['Default__c'] = app['Default__c'];
-          a['Application_Icon_Url__c'] = app['Application_Icon_Url__c'];
+          a['Application_Icon_URL__c'] = app['Application_Icon_URL__c'];
           a['Application_URL__c'] = app['Application_URL__c'];
           a['Description__c'] = app['Description__c'];
           a['Active__c'] = app['Active__c'];
-          redis_client.set('apps:' + a['Id'] + '.json', JSON.stringify(a));
+          redisClient.set('apps:' + a['Id'] + '.json', JSON.stringify(a));
           return callback(a);
         }
       });
@@ -248,20 +274,32 @@
 
   rebuild_apps_json = function(callback) {
     return S3GetListOfApps(function(keys) {
-      var all_apps, appcount, i, url, _i, _len, _results;
+      var all_apps, appcount, defaultapps, i, mandatoryapps, url, _i, _len, _results;
 
       appcount = keys.length;
       i = 0;
       all_apps = [];
+      mandatoryapps = [];
+      defaultapps = [];
       _results = [];
       for (_i = 0, _len = keys.length; _i < _len; _i++) {
         url = keys[_i];
         _results.push(S3ReadSingleAppJSON(url, function(json) {
+          var mandefault;
+
           if (json['Active__c'] === true) {
             all_apps.push(json);
+            if (json['Mandatory__c'] === true) {
+              mandatoryapps.push(json);
+            }
+            if (json['Default__c'] === true) {
+              defaultapps.push(json);
+            }
           }
+          mandefault = mandatoryapps.push(defaultapps);
           if (i++ === appcount - 1) {
-            redis_client.set('apps:apps.json', JSON.stringify(all_apps));
+            redisClient.set('apps:apps.json', JSON.stringify(all_apps));
+            redisClient.set('apps:mandatory-default.json', JSON.stringify(mandefault));
             S3uploadjson(apps_filename, JSON.stringify(all_apps));
             return callback(all_apps);
           }
@@ -280,17 +318,42 @@
 
 
   app.post('/upload', function(req, res, next) {
-    return cleanbodyjson(req, function(json) {
-      var filename, newapp;
+    var appcount, error, filename, i, json, _i, _len, _results;
 
-      newapp = JSON.parse(json);
-      filename = newapp['Id'] + '.json';
-      S3uploadjson(filename, JSON.stringify(newapp));
-      res.send(newapp);
-      return rebuild_apps_json(function(all_apps) {
-        return console.log("New App Count " + all_apps.length);
-      });
-    });
+    try {
+      if (req.body.json === void 0) {
+        console.log("req.body.json is " + req.body.json + " :-(");
+        json = req.body;
+      } else {
+        json = req.body.json;
+      }
+      if (typeof json === "string") {
+        json = JSON.parse(json);
+      }
+    } catch (_error) {
+      error = _error;
+      console.log("InVALID JSON (BODY) json typeof : " + (typeof json));
+      throw error;
+    }
+    appcount = json.length;
+    console.log("/UPLOAD is processing " + appcount + " apps - json type : " + (typeof json));
+    i = 1;
+    _results = [];
+    for (_i = 0, _len = json.length; _i < _len; _i++) {
+      app = json[_i];
+      filename = app['Id'] + '.json';
+      S3uploadjson(filename, JSON.stringify(app));
+      console.log("i:" + i + " - appcount:" + appcount);
+      if (i === appcount) {
+        res.send(json);
+        rebuild_apps_json(function(all_apps) {
+          console.log("New App Count " + all_apps.length);
+          return console.log("\n - - - finished uploading - - - \n\n");
+        });
+      }
+      _results.push(i++);
+    }
+    return _results;
   });
 
   /* Fetch FULL List of APPS from Redis
@@ -298,7 +361,7 @@
 
 
   app.get('/appsjson', function(req, res) {
-    return redis_client.get('apps:apps.json', function(err, reply) {
+    return redisClient.get('apps:apps.json', function(err, reply) {
       return res.send(JSON.parse(reply));
     });
   });
@@ -346,8 +409,6 @@
   app.get('/email', function(req, res) {
     var email;
 
-    console.log(" - - - - - - - - - req.user - - - - - - - - ");
-    console.log(req.user);
     if (req.user === void 0) {
       req.user = {};
       req.user['profiles'] = {};
@@ -367,7 +428,6 @@
         }
       ];
     }
-    console.log(" - - - - - - - - - - - - - - - - - - - - - - ");
     email = req.user.profiles.google[0]['emails'][0]['value'];
     return res.send({
       'email': email
@@ -433,10 +493,12 @@
   });
 
   app.get('/fakeapp', function(req, res) {
-    var exampleapp;
+    var exampleapp, exampleappOBJECT;
 
     exampleapp = CreateFakeApp();
-    return res.send(exampleapp);
+    exampleappOBJECT = [];
+    exampleappOBJECT[0] = exampleapp;
+    return res.send(exampleappOBJECT);
   });
 
   app.get('/tdd', function(req, res) {

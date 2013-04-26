@@ -17,9 +17,11 @@ app.configure () ->
 
 ### - - - - - REDIS - - - - - ###
 redis = require 'redis'
-redis_client = redis.createClient()
-redis_client.on "error", (err) ->
-  console.log("REDIS FAIL : " + err);
+if !redisClient
+  console.log "...................................Need to CONNECT to REDIS ..."
+  redisClient = redis.createClient()
+  redisClient.on "error", (err) ->
+    console.log("REDIS FAIL : " + err);
 
 ### - - - - - S3 Config and Knox Client - - - - - ###
 knox = require 'knox' # see: https://github.com/LearnBoost/knox
@@ -88,15 +90,20 @@ cleanbodyjson = (req, callback) ->
 
 get_app_list = (req, callback) ->
   # first check if this *user* has customiszed her ribbon
+  if req.user is undefined
+    req.user = {}  # simulate logged in user
+    req.user['profiles'] = {}
+    req.user.profiles['google'] = [{"displayName":"Florian Höhn","emails":[{"value":"florian.hoehn@test.newsint.co.uk"}],"name":{"familyName":"Höhn","givenName":"Florian"},"identifier":"https://www.google.com/accounts/o8/id?id=AItOawljE9AYuKXDVqwjDOTLjZ88YiM44adgZNc"}]
+  
   email = req.user.profiles.google[0]['emails'][0]['value']
   myapps = 'apps:'+email+'.json'
   console.log "MYAPPS: #{myapps}"
-  redis_client.get(myapps, (err,reply) ->
+  redisClient.get(myapps, (err,reply) ->
     if err or reply is null
       console.log "REDIS ERROR: #{err} (user has not personalised ribbon)"
       # if user has no custom ribbon, return full list of apps
-      redis_client.get('apps:apps.json', (err,reply) ->
-        console.log "Send ALL apps.json to browser"
+      redisClient.get('apps:mandatory-default.json', (err,reply) ->
+        console.log "Send the Mandatory & Default apps to browser"
         callback(reply) 
       )
     else
@@ -107,6 +114,10 @@ set_my_apps = (req, callback) ->
   console.log('..................................>> /upload req.body :')
   console.log req.body
   console.log('..................................<< /upload req.body')
+  if req.user is undefined
+    req.user = {}  # simulate logged in user
+    req.user['profiles'] = {}
+    req.user.profiles['google'] = [{"displayName":"Florian Höhn","emails":[{"value":"florian.hoehn@test.newsint.co.uk"}],"name":{"familyName":"Höhn","givenName":"Florian"},"identifier":"https://www.google.com/accounts/o8/id?id=AItOawljE9AYuKXDVqwjDOTLjZ88YiM44adgZNc"}]
 
   try # cleaning dirt
     if req.body.json is undefined
@@ -119,7 +130,7 @@ set_my_apps = (req, callback) ->
     throw error
 
   email = req.user.profiles.google[0]['emails'][0]['value']
-  redis_client.set('apps:'+email+'.json', JSON.stringify(json))
+  redisClient.set('apps:'+email+'.json', JSON.stringify(json))
   callback(json)
 
 ### List all the json files in the S3 Bucket ###
@@ -155,12 +166,12 @@ S3ReadSingleAppJSON = (url, callback) ->
         a['Name'] = app['Name']
         a['Mandatory__c'] = app['Mandatory__c']
         a['Default__c'] = app['Default__c']
-        a['Application_Icon_Url__c'] = app['Application_Icon_Url__c']
+        a['Application_Icon_URL__c'] = app['Application_Icon_URL__c']
         a['Application_URL__c'] = app['Application_URL__c']
         a['Description__c'] = app['Description__c']
         a['Active__c'] = app['Active__c']
         # write these essential fields to Redis
-        redis_client.set('apps:'+a['Id']+'.json', JSON.stringify(a))
+        redisClient.set('apps:'+a['Id']+'.json', JSON.stringify(a))
         callback(a)
     ) # END res.on
   ) # END getFile
@@ -176,13 +187,21 @@ rebuild_apps_json = (callback) ->
     # console.log "Number of Apps to Fetch: #{appcount}"
     i = 0
     all_apps = []
+    mandatoryapps = []
+    defaultapps = []
     for url in keys
       S3ReadSingleAppJSON(url, (json) ->
         # console.log "ID: #{json['Id']}"
         if json['Active__c'] == true
           all_apps.push json
+          if json['Mandatory__c'] == true 
+            mandatoryapps.push json
+          if json['Default__c'] == true
+            defaultapps.push json
+        mandefault = mandatoryapps.push defaultapps
         if i++ is  appcount-1
-          redis_client.set('apps:apps.json', JSON.stringify(all_apps))
+          redisClient.set('apps:apps.json', JSON.stringify(all_apps))
+          redisClient.set('apps:mandatory-default.json', JSON.stringify(mandefault))
           S3uploadjson(apps_filename, JSON.stringify(all_apps))
           callback(all_apps)
       )
@@ -227,7 +246,7 @@ app.post '/upload', (req, res, next) ->
 
 ### Fetch FULL List of APPS from Redis ###
 app.get '/appsjson', (req, res) ->
-  redis_client.get('apps:apps.json', (err,reply) ->
+  redisClient.get('apps:apps.json', (err,reply) ->
     res.send JSON.parse(reply)
   )
 
