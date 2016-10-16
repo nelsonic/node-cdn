@@ -91,9 +91,9 @@ Here are a couple of simple tutorials to get you started:
 >> Must move this block to CoffeeScript Blog Post / Rant ... ;-)
 
 
-#### Testing with [Jasmine](http://pivotal.github.io/jasmine) 
+#### Testing with [Jasmine](https://jasmine.github.io/) 
 
-For our *Unit Testing* http://pivotal.github.io/jasmine/ 
+For our *Unit Testing* https://jasmine.github.io/
 If you are *new* to using Jasmine I recommend you take the time to *learn it well* by working through these tutorials:
 
 - Basic intro to Jasmine: http://net.tutsplus.com/tutorials/javascript-ajax/testing-your-javascript-with-jasmine/
@@ -129,7 +129,7 @@ If you get stuck or have any questions tweet me! [@nelsonic](https://twitter.com
 
 ---
 #### Notes to Future-Self:
-If you need to *update* the version of **Jasmine** go to: https://github.com/pivotal/jasmine/downloads
+If you need to *update* the version of **Jasmine** go to: https://github.com/jasmine/jasmine/releases
 
 I'm using [**CDNJS**](http://cdnjs.com/) http://cdnjs.com/ to source all Backbone JS dependencies in **SpecRunner.html** (but you do not *need* to know Backbone to use this module!)
 
